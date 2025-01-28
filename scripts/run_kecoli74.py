@@ -7,33 +7,6 @@ import pandas as pd
 
 plt.rcParams['figure.dpi'] = 300
 
-#%%
-resources_bigg = os.path.join('resources', 'bigg')
-resources_ecocyc = os.path.join('resources', 'ecocyc')
-
-ecocyc_cc = pd.read_csv(os.path.join(resources_ecocyc, 'Central-carbon-metabolism.txt'),
-                        sep='\t',header=0,index_col=0)
-bigg_metabolites = pd.read_csv(os.path.join(resources_bigg, 'bigg_models_metabolites.txt'),
-                               sep='\t',header=0,index_col=0)
-bigg_rxns = pd.read_csv(os.path.join(resources_bigg,'bigg_models_reactions.txt'),
-                        sep='\t',header=0,index_col=0)
-
-#%%
-import requests
-
-s = requests.Session()
-s.post('https://websvc.biocyc.org/credentials/login/',
-       data={'email': 'mutsuddy@uchc.edu', 'password': 'FX##uhsVdpiTK7X'})
-
-#%%
-name_a = 'trpA'
-class_a ='Genes'
-fmt_a = 'json'
-
-r = s.get(f'https://websvc.biocyc.org/ECOLI/name-search?object={name_a}&class={class_a}&fmt={fmt_a}')
-
-#%%
-
 
 #%%
 
