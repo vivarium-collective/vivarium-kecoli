@@ -13,7 +13,7 @@ plt.rcParams['figure.dpi'] = 300
 model_dir = os.path.join('models')
 model_kecoli74 = load_model(os.path.join(model_dir,'k-ecoli74.xml'))
 species_kecoli74 = get_species(model=model_kecoli74)
-
+rxn_kecoli74 = get_reactions(model=model_kecoli74)
 ic_default = species_kecoli74.initial_concentration
 
 #%%

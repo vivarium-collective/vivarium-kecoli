@@ -1,8 +1,13 @@
 import requests
+import json
 
 s = requests.Session()
+
+with open('biocyc_credentials.json','r') as f:
+    credentials = json.load(f)
+
 s.post('https://websvc.biocyc.org/credentials/login/',
-       data={'email': 'mutsuddy@uchc.edu', 'password': 'FX##uhsVdpiTK7X'})
+       data={'email': credentials['email'], 'password': credentials['password']})
 
 #%%
 name_a = 'trpA'

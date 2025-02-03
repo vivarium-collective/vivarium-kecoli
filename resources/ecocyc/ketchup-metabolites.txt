@@ -1,0 +1,22 @@
+Ketchup	BioCyc	BIGG
+3PG	G3P	<a href='http://bigg.ucsd.edu/universal/metabolites/3pg'>3pg</a>
+6PG	CPD-2961	<a href='http://bigg.ucsd.edu/universal/metabolites/6pgc'>6pgc</a>
+AKG	2-KETOGLUTARATE	<a href='http://bigg.ucsd.edu/universal/metabolites/akg'>akg</a>
+Ac_e	ACET	<a href='http://bigg.ucsd.edu/universal/metabolites/ac'>ac</a>
+CO2_e	CARBON-DIOXIDE	<a href='http://bigg.ucsd.edu/universal/metabolites/co2'>co2</a>
+E4P	ERYTHROSE-4P	<a href='http://bigg.ucsd.edu/universal/metabolites/e4p'>e4p</a>
+FTHF	10-FORMYL-THF	<a href='http://bigg.ucsd.edu/universal/metabolites/10fthf'>10fthf</a>
+G6P	GLC-6-P	<a href='http://bigg.ucsd.edu/universal/metabolites/g6p'>g6p</a>
+Gluc_e	Glucopyranose	<a href='http://bigg.ucsd.edu/universal/metabolites/glc__D'>glc__D</a>
+Glx	GLYOX	<a href='http://bigg.ucsd.edu/universal/metabolites/glx'>glx</a>
+ICit	THREO-DS-ISO-CITRATE	<a href='http://bigg.ucsd.edu/universal/metabolites/icit'>icit</a>
+MEETHF	5-10-METHENYL-THF	<a href='http://bigg.ucsd.edu/universal/metabolites/methf'>methf</a>
+METHF	5-METHYL-THF	<a href='http://bigg.ucsd.edu/universal/metabolites/5mthf'>5mthf</a>
+NH3_e	AMMONIA	
+O2_e	OXYGEN-MOLECULE	<a href='http://bigg.ucsd.edu/universal/metabolites/o2'>o2</a>
+OAC	OXALACETIC_ACID	<a href='http://bigg.ucsd.edu/universal/metabolites/oaa'>oaa</a>
+R5P	RIBOSE-5P	
+Ru5P	RIBULOSE-5P	<a href='http://bigg.ucsd.edu/universal/metabolites/ru5p__D'>ru5p__D</a>
+S7P	D-SEDOHEPTULOSE-7-P	
+SO4_e	SULFATE	<a href='http://bigg.ucsd.edu/universal/metabolites/so4'>so4</a>
+X5P	XYLULOSE-5-PHOSPHATE	<a href='http://bigg.ucsd.edu/universal/metabolites/xu5p__D'>xu5p__D</a>
