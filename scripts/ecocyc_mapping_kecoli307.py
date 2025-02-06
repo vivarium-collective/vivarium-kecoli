@@ -5,8 +5,8 @@ import requests
 import re
 import libsbml
 import json
-from basico import *
 
+#%%
 s = requests.Session()
 
 with open('biocyc_credentials.json','r') as f:
@@ -18,6 +18,9 @@ s.post('https://websvc.biocyc.org/credentials/login/',
 resources_bigg = os.path.join('resources', 'bigg')
 resources_ecocyc = os.path.join('resources', 'ecocyc')
 resources_vEcoli = os.path.join('resources', 'vEcoli')
+resources_ketchup = os.path.join('resources', 'ketchup')
+
+ketchup_suppl = pd.read_excel(os.path.join(resources_ketchup, 'ketchup_supplementary.xlsx'),sheet_name='ST10')
 
 ecocyc_cc = pd.read_csv(os.path.join(resources_ecocyc, 'Central-carbon-metabolism.txt'),
                         sep='\t',header=0,index_col=0)
@@ -33,6 +36,28 @@ ecocyc_metabolite_results_2 = pd.read_csv(os.path.join(resources_ecocyc, 'ketchu
 vEcoli_bulk = np.loadtxt(os.path.join(resources_vEcoli, 'bulk_molecule_ids.txt'),delimiter='\t',dtype=str)
 
 vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
+
+#%%
+
+kecoli307_metabolites = ketchup_suppl.loc[:,'ID'].values
+
+
+# bigg_cross_reference
+
+kecoli307_mapping = {}
+
+for mtb in kecoli307_metabolites:
+    bigg_mtb_all = []
+    for bigg_idx in range(len(bigg_metabolites)):
+        bigg_mtb = bigg_metabolites.iloc[bigg_idx,0]
+        if mtb == bigg_mtb:
+            bigg_mtb_all.append(bigg_mtb)
+    kecoli307_mapping[mtb] = bigg_mtb_all
+
+#%%
+
+
+
 
 #%%
 biocyc_names = ecocyc_metabolite_results['BioCyc Common-Name'].values
@@ -60,7 +85,7 @@ vEcoli_mapping['vEcoli'] = np.isin(list(biocyc_id.values()),vEcoli_bulk)
 
 reader = libsbml.SBMLReader()
 
-model = reader.readSBMLFromFile(os.path.join("models","k-ecoli74.xml")).getModel()
+model = reader.readSBMLFromFile(os.path.join("models","k-ecoli307.xml")).getModel()
 
 
 species_all = [sp.getName() for sp in model.getListOfSpecies()]
