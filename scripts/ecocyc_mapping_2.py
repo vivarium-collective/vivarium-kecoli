@@ -33,7 +33,7 @@ kecoli74_metabolites = pd.read_excel(os.path.join(resources_ketchup, 'ketchup_su
 
 kecoli74_metabolites_biocyc = {}
 query_failed = []
-
+kecoli74_mapping_multi = {}
 for query in kecoli74_metabolites:
 
     time.sleep(0.15)
@@ -50,6 +50,9 @@ for query in kecoli74_metabolites:
 
             kecoli74_metabolites_biocyc[query] = biocyc_id
 
+            if len(db_links['BioCyc'])>1:
+                kecoli74_mapping_multi[query] = db_links['BioCyc']
+
     elif len(query) == 3:
         r = s.get(bigg_web_api + str(query.lower()) + '__L')
 
@@ -63,6 +66,9 @@ for query in kecoli74_metabolites:
 
                 kecoli74_metabolites_biocyc[query] = biocyc_id
 
+                if len(db_links['BioCyc']) > 1:
+                    kecoli74_mapping_multi[query] = db_links['BioCyc']
+
     elif '_e' in query:
         r = s.get(bigg_web_api + str(query.lower().replace('_e','')))
         if r.status_code == 200:
@@ -72,7 +78,10 @@ for query in kecoli74_metabolites:
             if 'BioCyc' in db_links.keys():
                 biocyc_id = db_links['BioCyc'][0]['id'].replace('META:', '')
 
-                kecoli74_metabolites_biocyc[query] = biocyc_id
+                kecoli74_metabolites_biocyc[query] =
+
+                if len(db_links['BioCyc']) > 1:
+                    kecoli74_mapping_multi[query] = db_links['BioCyc']
     else:
         r = s.get(bigg_web_api + str(query))
         if r.status_code == 200:
@@ -95,5 +104,18 @@ np.savetxt('mapping_results/query_failed_kecoli74.txt',query_failed,fmt='%s')
 metabolite_translation_kecoli74 = pd.read_csv(os.path.join('mapping_results', 'translation_results_kecoli74.txt'),
                                         sep='\t',header=0,index_col=0)
 
+biocyc_names = metabolite_translation_kecoli74['BioCyc Common-Name'].values
+biocyc_query = metabolite_translation_kecoli74.index
+biocyc_id = {}
 
+for idx,name in enumerate(biocyc_names):
+    url = f'https://websvc.biocyc.org/ECOLI/name-search?object={name}&class=Compounds&fmt=json'
+    r = s.get(url)
+    if r.status_code == 200:
+        kecoli74_metabolites_biocyc[biocyc_query[idx]] = r.json()['RESULTS'][0]['OBJECT-ID']
 
+#%%
+
+for idx in range(len(ecocyc_metabolite_results_2)):
+
+    biocyc_id[ecocyc_metabolite_results_2.index[idx]] = ecocyc_metabolite_results_2.BioCyc.values[idx]
