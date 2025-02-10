@@ -27,8 +27,10 @@ resources_ketchup = os.path.join('resources', 'ketchup')
 bigg_web_api = 'http://bigg.ucsd.edu/api/v2/universal/metabolites/'
 
 kecoli74_metabolites = pd.read_excel(os.path.join(resources_ketchup, 'ketchup_supplementary.xlsx'),sheet_name='ST2')['ID'].to_list()
+#%%
+vEcoli_bulk = np.loadtxt(os.path.join(resources_vEcoli, 'bulk_molecule_ids.txt'),delimiter='\t',dtype=str)
 
-
+vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
 #%%
 
 kecoli74_metabolites_biocyc = {}
