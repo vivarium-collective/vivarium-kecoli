@@ -78,7 +78,7 @@ for query in kecoli74_metabolites:
             if 'BioCyc' in db_links.keys():
                 biocyc_id = db_links['BioCyc'][0]['id'].replace('META:', '')
 
-                kecoli74_metabolites_biocyc[query] =
+                kecoli74_metabolites_biocyc[query] = biocyc_id
 
                 if len(db_links['BioCyc']) > 1:
                     kecoli74_mapping_multi[query] = db_links['BioCyc']
@@ -92,6 +92,9 @@ for query in kecoli74_metabolites:
                 biocyc_id = db_links['BioCyc'][0]['id']
 
                 kecoli74_metabolites_biocyc[query] = biocyc_id.replace('META:','')
+
+                if len(db_links['BioCyc']) > 1:
+                    kecoli74_mapping_multi[query] = db_links['BioCyc']
 
 
 for query in kecoli74_metabolites:
