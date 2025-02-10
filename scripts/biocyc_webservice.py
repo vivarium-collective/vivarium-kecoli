@@ -18,3 +18,12 @@ r = s.get(f'https://websvc.biocyc.org/ECOLI/name-search?object={name_a}&class={c
 
 if r.status_code == 200:
     print(r.json())
+
+#%%
+
+
+rr=s.get('http://bigg.ucsd.edu/api/v2/universal/metabolites/akg').json()
+
+#%%
+
+#%%
