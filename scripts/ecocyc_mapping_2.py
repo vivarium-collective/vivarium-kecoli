@@ -148,6 +148,16 @@ for idx,name in enumerate(biocyc_names):
 
 #%%
 
+kecoli74_mapping_manual = pd.read_csv('mapping_results/query_manual_kecoli74.txt',sep='\t',index_col=0,header=0)
+
+for idx in range(len(kecoli74_mapping_manual)):
+
+    ketchup_id = kecoli74_mapping_manual.index[idx]
+    kecoli74_metabolites_biocyc[ketchup_id] = [kecoli74_mapping_manual['BioCyc'][idx]]
+
+
+#%%
+
 for idx in range(len(ecocyc_metabolite_results_2)):
 
     biocyc_id[ecocyc_metabolite_results_2.index[idx]] = ecocyc_metabolite_results_2.BioCyc.values[idx]
