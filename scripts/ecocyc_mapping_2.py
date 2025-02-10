@@ -48,12 +48,19 @@ for query in kecoli74_metabolites:
 
         if 'BioCyc' in db_links.keys():
 
-            biocyc_id = db_links['BioCyc'][0]['id'].replace('META:','')
+            biocyc_db = db_links['BioCyc']
 
-            kecoli74_metabolites_biocyc[query] = biocyc_id
+            if len(biocyc_db) == 1:
+                biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                kecoli74_metabolites_biocyc[query] = [biocyc_id]
 
-            if len(db_links['BioCyc'])>1:
-                kecoli74_mapping_multi[query] = db_links['BioCyc']
+
+            else:
+                biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                kecoli74_metabolites_biocyc[query] = biocyc_ids
+
 
     elif len(query) == 3:
         r = s.get(bigg_web_api + str(query.lower()) + '__L')
@@ -64,12 +71,18 @@ for query in kecoli74_metabolites:
 
             if 'BioCyc' in db_links.keys():
 
-                biocyc_id = db_links['BioCyc'][0]['id'].replace('META:','')
+                biocyc_db = db_links['BioCyc']
 
-                kecoli74_metabolites_biocyc[query] = biocyc_id
+                if len(biocyc_db) == 1:
+                    biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                    kecoli74_metabolites_biocyc[query] = [biocyc_id]
 
-                if len(db_links['BioCyc']) > 1:
-                    kecoli74_mapping_multi[query] = db_links['BioCyc']
+
+                else:
+                    biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                    biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                    kecoli74_metabolites_biocyc[query] = biocyc_ids
 
     elif '_e' in query:
         r = s.get(bigg_web_api + str(query.lower().replace('_e','')))
@@ -78,12 +91,19 @@ for query in kecoli74_metabolites:
             db_links = r.json()['database_links']
 
             if 'BioCyc' in db_links.keys():
-                biocyc_id = db_links['BioCyc'][0]['id'].replace('META:', '')
 
-                kecoli74_metabolites_biocyc[query] = biocyc_id
+                biocyc_db = db_links['BioCyc']
 
-                if len(db_links['BioCyc']) > 1:
-                    kecoli74_mapping_multi[query] = db_links['BioCyc']
+                if len(biocyc_db) == 1:
+                    biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                    kecoli74_metabolites_biocyc[query] = [biocyc_id]
+
+
+                else:
+                    biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                    biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                    kecoli74_metabolites_biocyc[query] = biocyc_ids
     else:
         r = s.get(bigg_web_api + str(query))
         if r.status_code == 200:
@@ -91,12 +111,19 @@ for query in kecoli74_metabolites:
             db_links = r.json()['database_links']
 
             if 'BioCyc' in db_links.keys():
-                biocyc_id = db_links['BioCyc'][0]['id']
 
-                kecoli74_metabolites_biocyc[query] = biocyc_id.replace('META:','')
+                biocyc_db = db_links['BioCyc']
 
-                if len(db_links['BioCyc']) > 1:
-                    kecoli74_mapping_multi[query] = db_links['BioCyc']
+                if len(biocyc_db) == 1:
+                    biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                    kecoli74_metabolites_biocyc[query] = [biocyc_id]
+
+
+                else:
+                    biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                    biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                    kecoli74_metabolites_biocyc[query] = biocyc_ids
 
 
 for query in kecoli74_metabolites:
