@@ -1,0 +1,6 @@
+Query	BioCyc Common-Name	BioCyc	Kegg	CHEBI	PubChem	HMDB	ChemSpider	Metabolights	MetanetX	BiGG	SEED	InChi	
+FBP	beta-D-fructofuranose 1,6-bisphosphate	<A NAME="Sbeta-D-fructofuranos" HREF="/compound?orgid=META&id=FRUCTOSE-16-DIPHOSPHATE">&beta;-D-fructofuranose 1,6-bisphosphate</A>	C00354	32966	5460765	HMDB01058	4574223	NIL	MNXM90006	fdp	cpd19036
+GAP	D-glyceraldehyde 3-phosphate	<A NAME="SD-glyceraldehyde3-ph" HREF="/compound?orgid=META&id=GAP">D-glyceraldehyde 3-phosphate</A>	C00118	59776	24794350	HMDB01112	NIL	NIL	MNXM74	g3p	NIL
+KDPG	2-dehydro-3-deoxy-D-gluconate 6-phosphate	<A NAME="S2-dehydro-3-deoxy-D-" HREF="/compound?orgid=META&id=2-KETO-3-DEOXY-6-P-GLUCONATE">2-dehydro-3-deoxy-D-gluconate 6-phosphate</A>	C04442	57569	44229082	HMDB01376	NIL	NIL	MNXM649	2ddg6p	cpd02711
+LLDAP	L,L-diaminopimelate	<A NAME="SLL-diaminopimelate" HREF="/compound?orgid=META&id=LL-DIAMINOPIMELATE">L,L-diaminopimelate</A>	C00666	57609	1549100	HMDB01370	NIL	MTBLC57609	MNXM644	26dap_LL	cpd00504
+Suc	succinate	<A NAME="Ssuccinate" HREF="/compound?orgid=META&id=SUC">succinate</A>	C00042	30031	160419	HMDB00254	140973	MTBLC30031	MNXM25	succ	cpd00036

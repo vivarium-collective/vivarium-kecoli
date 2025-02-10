@@ -89,9 +89,11 @@ for query in kecoli74_metabolites:
     if query not in kecoli74_metabolites_biocyc.keys():
         query_failed.append(query)
 
+np.savetxt('mapping_results/query_failed_kecoli74.txt',query_failed,fmt='%s')
 
 #%%
-
+metabolite_translation_kecoli74 = pd.read_csv(os.path.join('mapping_results', 'translation_results_kecoli74.txt'),
+                                        sep='\t',header=0,index_col=0)
 
 
 
