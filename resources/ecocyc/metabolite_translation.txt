@@ -1,0 +1,42 @@
+Query	BioCyc Common-Name	BioCyc	Kegg	CHEBI	PubChem	HMDB	ChemSpider	Metabolights	MetanetX	BiGG	SEED	InChi	
+ATP	ATP	<A NAME="SATP" HREF="/compound?orgid=ECOLI&id=ATP">ATP</A>	C00002	30616	5461108	HMDB00538	4574455	MTBLC30616	MNXM3	atp	cpd00002
+Ac	GLYCO-CT-ACETYL	<A NAME="SGLYCO-CT-ACETYL" HREF="/compound?orgid=ECOLI&id=GLYCO-CT-ACETYL">GLYCO-CT-ACETYL</A>	NIL	NIL	NIL	NIL	NIL	NIL	NIL	NIL	NIL
+AcCoA	acetyl-CoA	<A NAME="Sacetyl-CoA" HREF="/compound?orgid=ECOLI&id=ACETYL-COA">acetyl-CoA</A>	C00024	57288	45266541	HMDB01206	NIL	MTBLC57288	MNXM21	accoa	cpd00022
+Arg	L-arginine	<A NAME="SL-arginine" HREF="/compound?orgid=ECOLI&id=ARG">L-arginine</A>	C00062	32682	1549073	HMDB00517	1266045	MTBLC32682	MNXM70	arg__L	NIL
+Asn	L-asparagine	<A NAME="SL-asparagine" HREF="/compound?orgid=ECOLI&id=ASN">L-asparagine</A>	C00152	58048	6992089	HMDB00168	NIL	MTBLC58048	MNXM147	asn__L	NIL
+Asp	L-aspartate	<A NAME="SL-aspartate" HREF="/compound?orgid=ECOLI&id=L-ASPARTATE">L-aspartate</A>	C00049	29991	5460294	HMDB00191	4573879	MTBLC29991	MNXM42	asp__L	NIL
+CO2	CO2	<A NAME="SCOSUB2SUB" HREF="/compound?orgid=ECOLI&id=CARBON-DIOXIDE">CO<SUB>2</SUB></A>	C00011	16526	280	HMDB01967	274	MTBLC16526	MNXM13	co2	cpd00011
+Cit	citrate	<A NAME="Scitrate" HREF="/compound?orgid=ECOLI&id=CIT">citrate</A>	C00158	16947	31348	HMDB00094	29081	MTBLC16947	MNXM131	cit	cpd00137
+Cys	L-cysteine	<A NAME="SL-cysteine" HREF="/compound?orgid=ECOLI&id=CYS">L-cysteine</A>	C00097	35235	6419722	HMDB00574	NIL	MTBLC35235	MNXM55	cys__L	NIL
+DHAP	glycerone phosphate	<A NAME="Sglyceronephosphate" HREF="/compound?orgid=ECOLI&id=DIHYDROXY-ACETONE-PHOSPHATE">glycerone phosphate</A>	C00111	57642	4643300	HMDB01473	3833110	MTBLC57642	MNXM77	dhap	cpd00095
+F6P	beta-D-fructofuranose 6-phosphate	<A NAME="Sbeta-D-fructofuranos" HREF="/compound?orgid=ECOLI&id=FRUCTOSE-6P">&beta;-D-fructofuranose 6-phosphate</A>	C05345	57634	21604863	HMDB03971	10239172	NIL	MNXM89621	f6p	cpd19035
+FADH2	FADH2	<A NAME="SFADHSUB2SUB" HREF="/compound?orgid=ECOLI&id=FADH2">FADH<SUB>2</SUB></A>	C01352	58307	46931118	HMDB01197	NIL	MTBLC58307	MNXM38	fadh2	cpd00982
+FBP	beta-D-fructofuranose 1,6-bisphosphate	<A NAME="Sbeta-D-fructofuranos" HREF="/compound?orgid=ECOLI&id=FRUCTOSE-16-DIPHOSPHATE">&beta;-D-fructofuranose 1,6-bisphosphate</A>	C00354	32966	5460765	HMDB01058	4574223	NIL	MNXM90006	fdp	cpd19036
+Fum	fumarate	<A NAME="Sfumarate" HREF="/compound?orgid=ECOLI&id=FUM">fumarate</A>	C00122	29806	5460307	HMDB00134	4573886	MTBLC29806	MNXM93	fum	cpd00106
+GAP	D-glyceraldehyde 3-phosphate	<A NAME="SD-glyceraldehyde3-ph" HREF="/compound?orgid=ECOLI&id=GAP">D-glyceraldehyde 3-phosphate</A>	C00118	59776	24794350	HMDB01112	NIL	NIL	MNXM74	g3p	NIL
+Gln	L-glutamine	<A NAME="SL-glutamine" HREF="/compound?orgid=ECOLI&id=GLN">L-glutamine</A>	C00064	58359	6992086	HMDB00641	NIL	MTBLC58359	MNXM37	gln__L	NIL
+Glu	L-glutamate	<A NAME="SL-glutamate" HREF="/compound?orgid=ECOLI&id=GLT">L-glutamate</A>	C00025	29985	5460299	HMDB00148	4573882	MTBLC29985	NIL	glu__L	NIL
+Gly	glycine	<A NAME="Sglycine" HREF="/compound?orgid=ECOLI&id=GLY">glycine</A>	C00037	57305	5257127	HMDB00123	730	MTBLC15428	MNXM29	gly	cpd00033
+His	L-histidine	<A NAME="SL-histidine" HREF="/compound?orgid=ECOLI&id=HIS">L-histidine</A>	C00135	57595	6971009	HMDB00177	NIL	MTBLC57595	MNXM134	his__L	NIL
+Ile	L-isoleucine	<A NAME="SL-isoleucine" HREF="/compound?orgid=ECOLI&id=ILE">L-isoleucine</A>	C00407	58045	7043901	HMDB00172	NIL	MTBLC58045	MNXM231	ile__L	cpd00322
+KDPG	2-dehydro-3-deoxy-D-gluconate 6-phosphate	<A NAME="S2-dehydro-3-deoxy-D-" HREF="/compound?orgid=ECOLI&id=2-KETO-3-DEOXY-6-P-GLUCONATE">2-dehydro-3-deoxy-D-gluconate 6-phosphate</A>	C04442	57569	44229082	HMDB01376	NIL	NIL	MNXM649	2ddg6p	cpd02711
+LLDAP	L,L-diaminopimelate	<A NAME="SLL-diaminopimelate" HREF="/compound?orgid=ECOLI&id=LL-DIAMINOPIMELATE">L,L-diaminopimelate</A>	C00666	57609	1549100	HMDB01370	NIL	MTBLC57609	MNXM644	26dap_LL	cpd00504
+Leu	L-leucine	<A NAME="SL-leucine" HREF="/compound?orgid=ECOLI&id=LEU">L-leucine</A>	C00123	57427	7045798	HMDB00687	NIL	MTBLC57427	MNXM140	leu__L	NIL
+Lys	L-lysine	<A NAME="SL-lysine" HREF="/compound?orgid=ECOLI&id=LYS">L-lysine</A>	C00047	32551	5460926	HMDB00182	5747	MTBLC32551	MNXM78	lys__L	NIL
+Mal	(S)-malate	<A NAME="SiSi-malate" HREF="/compound?orgid=ECOLI&id=MAL">(<i>S</i>)-malate</A>	C00149	15589	5459792	HMDB00156	4573566	MTBLC15589	MNXM98	mal__L	cpd00130
+Met	L-methionine	<A NAME="SL-methionine" HREF="/compound?orgid=ECOLI&id=MET">L-methionine</A>	C00073	57844	6992087	HMDB00696	NIL	MTBLC57844	MNXM61	met__L	NIL
+NADH	NADH	<A NAME="SNADH" HREF="/compound?orgid=ECOLI&id=NADH">NADH</A>	C00004	57945	21604869	HMDB01487	10239197	MTBLC57945	MNXM10	nadh	cpd00004
+NADPH	NADPH	<A NAME="SNADPH" HREF="/compound?orgid=ECOLI&id=NADPH">NADPH</A>	C00005	57783	15983949	HMDB00221	10239199	MTBLC57783	MNXM6	nadph	cpd00005
+NH3	ammonia	<A NAME="Sammonia" HREF="/compound?orgid=ECOLI&id=AMMONIA">ammonia</A>	C00014	16134	222	HMDB00051	217	MTBLC16134	NIL	NIL	NIL
+O2	dioxygen	<A NAME="Sdioxygen" HREF="/compound?orgid=ECOLI&id=OXYGEN-MOLECULE">dioxygen</A>	C00007	15379	977	HMDB01377	952	MTBLC15379	MNXM4	o2	cpd00007
+PEP	phosphoenolpyruvate	<A NAME="Sphosphoienolipyruvat" HREF="/compound?orgid=ECOLI&id=PHOSPHO-ENOL-PYRUVATE">phospho<i>enol</i>pyruvate</A>	C00074	58702	3674425	HMDB00263	2907208	NIL	MNXM73	pep	cpd00061
+Phe	L-phenylalanine	<A NAME="SL-phenylalanine" HREF="/compound?orgid=ECOLI&id=PHE">L-phenylalanine</A>	C00079	58095	6925665	HMDB00159	NIL	MTBLC58095	MNXM97	phe__L	NIL
+Pro	L-proline	<A NAME="SL-proline" HREF="/compound?orgid=ECOLI&id=PRO">L-proline</A>	C00148	60039	6971047	HMDB00162	NIL	MTBLC60039	MNXM114	pro__L	NIL
+Pyr	GLYCO-CT-PYR	<A NAME="SGLYCO-CT-PYR" HREF="/compound?orgid=ECOLI&id=GLYCO-CT-PYR">GLYCO-CT-PYR</A>	NIL	NIL	NIL	NIL	NIL	NIL	NIL	NIL	NIL
+Ser	L-serine	<A NAME="SL-serine" HREF="/compound?orgid=ECOLI&id=SER">L-serine</A>	C00065	33384	6857581	HMDB00187	NIL	MTBLC33384	NIL	ser__L	NIL
+Suc	succinate	<A NAME="Ssuccinate" HREF="/compound?orgid=ECOLI&id=SUC">succinate</A>	C00042	30031	160419	HMDB00254	140973	MTBLC30031	MNXM25	succ	cpd00036
+SucCoA	succinyl-CoA	<A NAME="Ssuccinyl-CoA" HREF="/compound?orgid=ECOLI&id=SUC-COA">succinyl-CoA</A>	C00091	57292	45266545	HMDB01022	NIL	MTBLC57292	MNXM92	succoa	cpd00078
+Thr	L-threonine	<A NAME="SL-threonine" HREF="/compound?orgid=ECOLI&id=THR">L-threonine</A>	C00188	57926	6971019	HMDB00167	NIL	MTBLC57926	MNXM142	thr__L	cpd00161
+Trp	L-tryptophan	<A NAME="SL-tryptophan" HREF="/compound?orgid=ECOLI&id=TRP">L-tryptophan</A>	C00078	57912	6923516	HMDB00929	NIL	MTBLC57912	MNXM94	trp__L	NIL
+Tyr	L-tyrosine	<A NAME="SL-tyrosine" HREF="/compound?orgid=ECOLI&id=TYR">L-tyrosine</A>	C00082	58315	6942100	HMDB00158	NIL	MTBLC58315	MNXM76	tyr__L	NIL
+Val	L-valine	<A NAME="SL-valine" HREF="/compound?orgid=ECOLI&id=VAL">L-valine</A>	C00183	57762	6971018	HMDB00883	NIL	MTBLC57762	MNXM199	val__L	NIL
