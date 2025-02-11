@@ -261,3 +261,17 @@ StoicMat = pd.DataFrame(data=np.nan_to_num(StoicMat,copy=True,nan=0.0),index=Sto
 StoicMat.to_csv(os.path.join(resources_vEcoli,'StoicMat.txt'),sep='\t',index=True,header=True)
 
 #%%
+
+# species_StoicMat = [sp.split('[')[0] for sp in StoicMat.columns ]
+# sp_check = [True if sp in StoicMat.columns else False for sp in enz_mapping['biocyc_id']]
+
+sp_check = []
+
+for sp in enz_mapping['biocyc_id']:
+    check = [spm if sp==spm.split('[')[0] else None for spm in StoicMat.columns]
+    check = [x for x in check if x!=None]
+    sp_check.append(check)
+
+enz_mapping['species_vEcoli'] = sp_check
+
+#%%
