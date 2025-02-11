@@ -243,3 +243,21 @@ enz_mapping = enz_mapping.set_index('rxn_id')
 
 enz_mapping.to_csv('mapping_results/enz_mapping_kecoli74.txt',sep='\t')
 #%%
+
+vEcoli_metabolism = pd.read_csv(os.path.join(resources_vEcoli,'metabolic_reactions.tsv'),sep='\t',index_col=0,header=4)
+
+StoicMat = pd.DataFrame()
+
+for idx in range(len(vEcoli_metabolism)):
+    print(idx)
+    rxn_stoic = vEcoli_metabolism["stoichiometry"][idx]
+    rxn_stoic = rxn_stoic.replace("null","np.nan")
+    exec(f"dict_rxn={rxn_stoic}")
+    dict_rxn_df = pd.DataFrame(dict_rxn,index=[vEcoli_metabolism.index[idx]])
+
+    StoicMat = pd.concat([StoicMat,dict_rxn_df])
+
+StoicMat = pd.DataFrame(data=np.nan_to_num(StoicMat,copy=True,nan=0.0),index=StoicMat.index,columns=StoicMat.columns)
+StoicMat.to_csv(os.path.join(resources_vEcoli,'StoicMat.txt'),sep='\t',index=True,header=True)
+
+#%%
