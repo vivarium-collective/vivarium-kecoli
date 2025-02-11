@@ -275,3 +275,30 @@ for sp in enz_mapping['biocyc_id']:
 enz_mapping['species_vEcoli'] = sp_check
 
 #%%
+
+enz_mapping_vEcoli = []
+
+for target_idx in range(len(enz_mapping)):
+    sp_vEcoli = enz_mapping["species_vEcoli"][target_idx]
+    enz_vEcoli = []
+    for sp in sp_vEcoli:
+        rxn_idxs = np.where(StoicMat.loc[:,sp].values < 0)[0]
+        sp_rxns = StoicMat.index[rxn_idxs]
+        enz_sp = vEcoli_metabolism.loc[sp_rxns,'catalyzed_by'].values
+        # enz_sp = [x for xs in enz_sp for x in xs]
+        enz_vEcoli.append(enz_sp)
+    enz_vEcoli = [x for xs in enz_vEcoli for x in xs]
+
+    enz_vEcoli_new = []
+    for enz in enz_vEcoli:
+        enzs_str = enz[1:-1]
+        enzs_actual = enzs_str.split(',')
+        enzs_actual = [s.replace('"','').strip() for s in enzs_actual]
+        enz_vEcoli_new.append(enzs_actual)
+
+    enz_vEcoli_new =  [x for xs in enz_vEcoli_new for x in xs]
+    enz_vEcoli_new = list(np.unique(enz_vEcoli_new))
+    enz_mapping_vEcoli.append(enz_vEcoli_new)
+
+enz_mapping['enz_vEcoli'] = enz_mapping_vEcoli
+#%%
