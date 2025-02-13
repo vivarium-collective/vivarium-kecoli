@@ -37,3 +37,105 @@ vEcoli_bulk = np.loadtxt(os.path.join(resources_vEcoli, 'bulk_molecule_ids.txt')
 vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
 
 #%%
+millard_species = list(species_all.index)
+
+
+millard_metabolites_biocyc = {}
+query_failed = []
+millard_mapping_multi = {}
+
+
+for query in millard_species:
+
+    time.sleep(0.15)
+
+    r = s.get(bigg_web_api + str(query.lower()))
+
+    if r.status_code == 200:
+
+        db_links = r.json()['database_links']
+
+        if 'BioCyc' in db_links.keys():
+
+            biocyc_db = db_links['BioCyc']
+
+            if len(biocyc_db) == 1:
+                biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                millard_metabolites_biocyc[query] = [biocyc_id]
+
+
+            else:
+                biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                millard_metabolites_biocyc[query] = biocyc_ids
+
+
+    elif len(query) == 3:
+        r = s.get(bigg_web_api + str(query.lower()) + '__L')
+
+        if r.status_code == 200:
+
+            db_links = r.json()['database_links']
+
+            if 'BioCyc' in db_links.keys():
+
+                biocyc_db = db_links['BioCyc']
+
+                if len(biocyc_db) == 1:
+                    biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                    millard_metabolites_biocyc[query] = [biocyc_id]
+
+
+                else:
+                    biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                    biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                    millard_metabolites_biocyc[query] = biocyc_ids
+
+    elif '_e' in query:
+        r = s.get(bigg_web_api + str(query.lower().replace('_e', '')))
+        if r.status_code == 200:
+
+            db_links = r.json()['database_links']
+
+            if 'BioCyc' in db_links.keys():
+
+                biocyc_db = db_links['BioCyc']
+
+                if len(biocyc_db) == 1:
+                    biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                    millard_metabolites_biocyc[query] = [biocyc_id]
+
+
+                else:
+                    biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                    biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                    millard_metabolites_biocyc[query] = biocyc_ids
+    else:
+        r = s.get(bigg_web_api + str(query))
+        if r.status_code == 200:
+
+            db_links = r.json()['database_links']
+
+            if 'BioCyc' in db_links.keys():
+
+                biocyc_db = db_links['BioCyc']
+
+                if len(biocyc_db) == 1:
+                    biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                    millard_metabolites_biocyc[query] = [biocyc_id]
+
+
+                else:
+                    biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                    biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
+                    millard_metabolites_biocyc[query] = biocyc_ids
+
+for query in millard_species:
+    if query not in millard_metabolites_biocyc.keys():
+        query_failed.append(query)
+
+#%%
