@@ -1,0 +1,7 @@
+Query	BioCyc Common-Name	BioCyc	Kegg	CHEBI	PubChem	HMDB	ChemSpider	Metabolights	MetanetX	BiGG	SEED	InChi	
+BPG	3-phospho-D-glyceroyl phosphate	<A NAME="S3-phospho-D-glyceroy" HREF="/compound?orgid=ECOLI&id=DPG">3-phospho-D-glyceroyl phosphate</A>	C00236	57604	46878409	HMDB01270	19698372	MTBLC57604	MNXM261	13dpg	cpd00203
+GAP	D-glyceraldehyde 3-phosphate	<A NAME="SD-glyceraldehyde3-ph" HREF="/compound?orgid=ECOLI&id=GAP">D-glyceraldehyde 3-phosphate</A>	C00118	59776	24794350	HMDB01112	NIL	NIL	MNXM74	g3p	NIL
+KDPG	2-dehydro-3-deoxy-D-gluconate 6-phosphate	<A NAME="S2-dehydro-3-deoxy-D-" HREF="/compound?orgid=ECOLI&id=2-KETO-3-DEOXY-6-P-GLUCONATE">2-dehydro-3-deoxy-D-gluconate 6-phosphate</A>	C04442	57569	44229082	HMDB01376	NIL	NIL	MNXM649	2ddg6p	cpd02711
+SUC	succinate	<A NAME="Ssuccinate" HREF="/compound?orgid=ECOLI&id=SUC">succinate</A>	C00042	30031	160419	HMDB00254	140973	MTBLC30031	MNXM25	succ	cpd00036
+MgADP	MgADP	<A NAME="SMgADP" HREF="/compound?orgid=ECOLI&id=CPD0-1651">MgADP</A>	NIL	87194	30103	NIL	NIL	NIL	MNXM157964	NIL	cpd26266
+Pp	diphosphate	<A NAME="Sdiphosphate" HREF="/compound?orgid=ECOLI&id=PPI">diphosphate</A>	C00013	33019	4097574	HMDB00250	996	MTBLC33019	NIL	ppi	NIL

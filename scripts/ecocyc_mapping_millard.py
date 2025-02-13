@@ -138,4 +138,22 @@ for query in millard_species:
     if query not in millard_metabolites_biocyc.keys():
         query_failed.append(query)
 
+np.savetxt('mapping_results/query_failed_millard.txt',query_failed,fmt='%s')
+
+
+#%%
+
+metabolite_translation_millard = pd.read_csv(os.path.join('mapping_results', 'translation_results_millard.txt'),
+                                        sep='\t',header=0,index_col=0)
+
+biocyc_names = metabolite_translation_millard['BioCyc Common-Name'].values
+biocyc_query = metabolite_translation_millard.index
+biocyc_id = {}
+
+for idx,name in enumerate(biocyc_names):
+    url = f'https://websvc.biocyc.org/ECOLI/name-search?object={name}&class=Compounds&fmt=json'
+    r = s.get(url)
+    if r.status_code == 200:
+        millard_metabolites_biocyc[biocyc_query[idx]] = [r.json()['RESULTS'][0]['OBJECT-ID']]
+
 #%%
