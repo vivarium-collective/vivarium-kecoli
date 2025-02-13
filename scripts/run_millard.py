@@ -24,7 +24,7 @@ result_default = run_time_course(model=model_millard, duration=300)
 
 # sp_plot = ["GLCx","ACE","G6P","F6P","GAP","PGA3","PYR","R5P","E4P","MAL","OAA","AKG","ACCOA"]
 
-sp_plot = ["GLCx","ACE","G6P","F6P","GAP","PYR","R5P","MAL","AKG","ACCOA"]
+sp_plot = ["GLCx","ACEx","G6P","F6P","GAP","PYR","R5P","MAL","AKG","ACCOA"]
 
 
 fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(8, 5))
