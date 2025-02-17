@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-plt.rcParams['figure.dpi'] = 300
+plt.rcParams['figure.dpi'] = 90
 
 
 #%%
@@ -87,6 +87,12 @@ def plot_aa(results,labels):
     plt.subplots_adjust(wspace=0.35)
     plt.show()
 
+#%%
+from utils.run_model import perturb_env
+
+
+#%%
+
 def perturb_env(sp_name):
 
     sp_all = list(get_species(model=model_kecoli74).index.values)
@@ -114,10 +120,10 @@ def perturb_env(sp_name):
 
 #%%
 
-results_gluc = perturb_env('Gluc_e')
-results_so4 = perturb_env('SO4_e')
-results_nh3 = perturb_env('NH3_e')
-results_o2 = perturb_env('O2_e')
+results_gluc = perturb_env(model_kecoli74,'Gluc_e')
+results_so4 = perturb_env(model_kecoli74,'SO4_e')
+results_nh3 = perturb_env(model_kecoli74,'NH3_e')
+results_o2 = perturb_env(model_kecoli74,'O2_e')
 
 #%%
 
