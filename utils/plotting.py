@@ -85,7 +85,8 @@ def plot_aa(results,labels,output_plots):
     for ax_row in range(4):
         for ax_col in range(5):
             sp = sp_aa[sp_count]
-            for idx, res in enumerate(results):
+            for idx, res_dict in enumerate(results.values()):
+                res = res_dict['result']
                 sp_traj = res.loc[:, sp].values
                 axs_aa[ax_row, ax_col].plot(res.index, sp_traj, label=labels[idx], color=colors[idx])
             axs_aa[ax_row, ax_col].set_xlabel('Time (s)')
@@ -93,5 +94,6 @@ def plot_aa(results,labels,output_plots):
             sp_count += 1
     axs_aa[ax_row, ax_col].legend(loc='best')
     plt.subplots_adjust(wspace=0.35)
+    sp_perturb = results[list(results.keys())[idx]]['sp_perturb'].replace('_e', '')
 
-    plt.savefig(os.path.join(output_plots,'env_perturb_aa.png'))
+    plt.savefig(os.path.join(output_plots,str(sp_perturb)+'_perturb_aa.png'))
