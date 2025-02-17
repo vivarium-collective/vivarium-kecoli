@@ -142,8 +142,8 @@ results_o2 = perturb_env(model_kecoli74,'O2_e')
 
 #%%
 
-plot_pathway(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'])
-plot_aa(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'])
+plot_pathway(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
+plot_aa(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 
 #%%
 plot_pathway(results_so4,['SO4 (baseline)','SO4 (low)','SO4 (high)'])
