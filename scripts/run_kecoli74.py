@@ -15,8 +15,10 @@ wd = os.getcwd().replace('scripts', '')
 
 model_dir = os.path.join(wd,'models')
 
-model_kecoli74 = load_model(os.path.join(model_dir,model_name+'xml'))
+model_kecoli74 = load_model(os.path.join(model_dir,model_name+'.xml'))
+
 species_kecoli74 = get_species(model=model_kecoli74)
+
 rxn_kecoli74 = get_reactions(model=model_kecoli74)
 ic_default = species_kecoli74.initial_concentration
 
@@ -56,7 +58,7 @@ plt.show()
 
 #%%
 
-def plot_pathway(results,labels):
+def plot_pathway(results,labels,output_plots):
     sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
 
     fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
@@ -70,8 +72,8 @@ def plot_pathway(results,labels):
         axs[ax_idx].set_xlabel('Time (s)')
         axs[ax_idx].set_title(labels[ax_idx])
     axs[ax_idx].legend(loc='best')
-    plt.show()
-
+    # plt.show()
+    plt.savefig(os.path.join(output_plots,'env_perturb.png'))
 
 
 def plot_aa(results,labels):
