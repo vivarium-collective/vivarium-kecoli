@@ -104,7 +104,7 @@ def plot_aa(results,labels,output_plots):
     plt.savefig(os.path.join(output_plots,'env_perturb_aa.png'))
 #%%
 from utils.run_model import perturb_env
-
+from utils.plotting import plot_pathway, plot_aa
 
 #%%
 
@@ -143,7 +143,7 @@ results_o2 = perturb_env(model_kecoli74,'O2_e')
 #%%
 sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
 
-plot_pathway(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
+plot_pathway(results_gluc,sp_plot,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 plot_aa(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 
 #%%
