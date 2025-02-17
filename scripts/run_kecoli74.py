@@ -141,6 +141,7 @@ results_nh3 = perturb_env(model_kecoli74,'NH3_e')
 results_o2 = perturb_env(model_kecoli74,'O2_e')
 
 #%%
+sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
 
 plot_pathway(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 plot_aa(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
