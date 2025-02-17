@@ -56,12 +56,12 @@ plot_pathway(results_gluc,sp_plot,['Glucose (baseline)','Glucose (low)','Glucose
 plot_aa(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 
 
-plot_pathway(results_so4,sp_plot,['SO4 (baseline)','SO4 (low)','SO4 (high)'])
-plot_aa(results_so4,['SO4 (baseline)','SO4 (low)','SO4 (high)'])
-plot_pathway(results_nh3,['NH3 (baseline)','NH3 (low)','NH3 (high)'])
-plot_aa(results_nh3,['NH3 (baseline)','NH3 (low)','NH3 (high)'])
-plot_pathway(results_o2,['O2 (baseline)','O2 (low)','O2 (high)'])
-plot_aa(results_o2,['O2 (baseline)','O2 (low)','O2 (high)'])
+plot_pathway(results_so4,sp_plot,['SO4 (baseline)','SO4 (low)','SO4 (high)'],output_plots)
+plot_aa(results_so4,['SO4 (baseline)','SO4 (low)','SO4 (high)'],output_plots)
+plot_pathway(results_nh3, sp_plot,['NH3 (baseline)','NH3 (low)','NH3 (high)'],output_plots)
+plot_aa(results_nh3,['NH3 (baseline)','NH3 (low)','NH3 (high)'],output_plots)
+plot_pathway(results_o2, sp_plot,['O2 (baseline)','O2 (low)','O2 (high)'], output_plots)
+plot_aa(results_o2,['O2 (baseline)','O2 (low)','O2 (high)'],output_plots)
 
 
 #%%
