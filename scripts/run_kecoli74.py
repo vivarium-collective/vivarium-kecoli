@@ -76,7 +76,7 @@ def plot_pathway(results,labels,output_plots):
     plt.savefig(os.path.join(output_plots,'env_perturb.png'))
 
 
-def plot_aa(results,labels):
+def plot_aa(results,labels,output_plots):
     sp_count = 0
 
     sp_aa = ["Ala", "Arg", "Asn", "Asp", "Cys",
@@ -100,8 +100,8 @@ def plot_aa(results,labels):
             sp_count += 1
     axs_aa[ax_row, ax_col].legend(loc='best')
     plt.subplots_adjust(wspace=0.35)
-    plt.show()
-
+    # plt.show()
+    plt.savefig(os.path.join(output_plots,'env_perturb_aa.png'))
 #%%
 from utils.run_model import perturb_env
 
