@@ -67,7 +67,7 @@ def plot_pathway(results,sp_plot,labels,output_plots):
 
     sp_perturb = results[list(results.keys())[ax_idx]]['sp_perturb'].replace('_e','')
 
-    plt.savefig(os.path.join(output_plots,str(sp_perturb),'_perturb.png'))
+    plt.savefig(os.path.join(output_plots,str(sp_perturb)+'_perturb.png'))
 
 def plot_aa(results,labels,output_plots):
     sp_count = 0
