@@ -329,3 +329,7 @@ for target_idx in range(len(enz_mapping)):
 
 enz_mapping['enz_vEcoli'] = enz_mapping_vEcoli
 #%%
+enz_mapping.to_csv(os.path.join(output_mapping, 'enz_mapping_vEcoli.txt'), sep='\t', index=True, header=True)
+
+
+#%%
