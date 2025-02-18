@@ -10,6 +10,15 @@ from basico import *
 
 #%%
 
+model_name = "k-ecoli74"
+
+wd = os.getcwd().replace('scripts', '')
+
+model_dir = os.path.join(wd,'models')
+
+
+#%%
+
 s = requests.Session()
 
 with open('biocyc_credentials.json','r') as f:
