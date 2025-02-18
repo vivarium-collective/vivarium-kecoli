@@ -16,6 +16,19 @@ wd = os.getcwd().replace('scripts', '')
 
 model_dir = os.path.join(wd,'models')
 
+output_dir = os.path.join(wd,'output',model_name)
+
+os.makedirs(output_dir, exist_ok=True)
+
+output_results = os.path.join(output_dir,'results')
+output_plots = os.path.join(output_dir,'plots')
+output_mapping = os.path.join(output_dir,'mapping')
+
+os.makedirs(output_results, exist_ok=True)
+os.makedirs(output_plots, exist_ok=True)
+os.makedirs(output_mapping, exist_ok=True)
+
+dir_credentials = os.path.join(wd,'credentials')
 
 #%%
 

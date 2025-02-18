@@ -1,4 +1,4 @@
 .DS_Store
 .idea/
-biocyc_credentials.json
+credentials/biocyc_credentials.json
 output/
