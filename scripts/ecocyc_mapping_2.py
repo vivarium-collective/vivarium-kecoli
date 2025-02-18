@@ -32,7 +32,7 @@ os.makedirs(output_mapping, exist_ok=True)
 dir_credentials = os.path.join(wd,'credentials')
 
 #%%
-from utils.mapping import biocyc_credentials
+from utils.mapping import biocyc_credentials, query_bigg2biocyc
 
 s = biocyc_credentials(dir_credentials)
 
@@ -51,6 +51,63 @@ kecoli74_metabolites = pd.read_excel(os.path.join(resources_ketchup, 'ketchup_su
 vEcoli_bulk = np.loadtxt(os.path.join(resources_vEcoli, 'bulk_molecule_ids.txt'),delimiter='\t',dtype=str)
 
 vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
+
+#%% biocyc web service new
+
+
+kecoli74_metabolites_biocyc = {}
+query_failed = []
+kecoli74_mapping_multi = {}
+for query in kecoli74_metabolites:
+
+    time.sleep(0.15)
+
+    query_send = str(query.lower()) # query with lowercase first
+
+    biocyc_mapping = query_bigg2biocyc(query_send,s)
+
+    if len(biocyc_mapping)>0:
+        biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
+        if len(biocyc_ids)>0:
+            kecoli74_metabolites_biocyc[query] = biocyc_mapping
+
+
+    elif len(query) == 3:
+
+        query_send  = str(query.lower()) + '__L' # for finding L-amino acids
+        biocyc_mapping = query_bigg2biocyc(query_send,s)
+
+        if len(biocyc_mapping) > 0:
+            biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
+            if len(biocyc_ids) > 0:
+                kecoli74_metabolites_biocyc[query] = biocyc_mapping
+
+    elif '_e' in query:
+
+        query_send = str(query.lower().replace('_e',''))  # removing compartment identifier from query
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+
+        if len(biocyc_mapping) > 0:
+            biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
+            if len(biocyc_ids) > 0:
+                kecoli74_metabolites_biocyc[query] = biocyc_mapping
+
+    else:
+        query_send = query
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+
+        if len(biocyc_mapping) > 0:
+            biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
+            if len(biocyc_ids) > 0:
+                kecoli74_metabolites_biocyc[query] = biocyc_mapping
+
+
+
+for query in kecoli74_metabolites:
+    if query not in kecoli74_metabolites_biocyc.keys():
+        query_failed.append(query)
+
+
 #%%
 
 kecoli74_metabolites_biocyc = {}

@@ -16,7 +16,7 @@ def biocyc_credentials(dir_credentials):
     return s
 
 
-def query_bigg2biocyc(query,session,vEcoli_bulk=vEcoli_bulk):
+def query_bigg2biocyc(query,session):
 
     biocyc_mapping = []
     bigg_web_api = 'http://bigg.ucsd.edu/api/v2/universal/metabolites/'
@@ -35,8 +35,8 @@ def query_bigg2biocyc(query,session,vEcoli_bulk=vEcoli_bulk):
 
 
             else:
-                biocyc_ids_search = [entry['id'].replace('META:', '') for entry in biocyc_db]
-                biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+                biocyc_ids = [entry['id'].replace('META:', '') for entry in biocyc_db]
+                # biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
 
                 biocyc_mapping = biocyc_ids
 
