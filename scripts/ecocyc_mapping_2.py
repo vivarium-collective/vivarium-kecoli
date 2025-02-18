@@ -60,18 +60,18 @@ for query in kecoli74_metabolites:
 
     time.sleep(0.15)
 
-    r = s.get(bigg_web_api+str(query.lower()))
+    r = s.get(bigg_web_api+str(query.lower())) # query with lowercase first
 
-    if r.status_code == 200:
+    if r.status_code == 200: # successful response
 
-        db_links = r.json()['database_links']
+        db_links = r.json()['database_links'] # convert to json dict and check of database links exist
 
         if 'BioCyc' in db_links.keys():
 
-            biocyc_db = db_links['BioCyc']
+            biocyc_db = db_links['BioCyc'] # look for biocyc
 
             if len(biocyc_db) == 1:
-                biocyc_id = biocyc_db[0]['id'].replace('META:', '')
+                biocyc_id = biocyc_db[0]['id'].replace('META:', '') # remove prefix
                 kecoli74_metabolites_biocyc[query] = [biocyc_id]
 
 
@@ -83,7 +83,7 @@ for query in kecoli74_metabolites:
 
 
     elif len(query) == 3:
-        r = s.get(bigg_web_api + str(query.lower()) + '__L')
+        r = s.get(bigg_web_api + str(query.lower()) + '__L') # for finding L-amino acids
 
         if r.status_code == 200:
 
@@ -105,7 +105,7 @@ for query in kecoli74_metabolites:
                     kecoli74_metabolites_biocyc[query] = biocyc_ids
 
     elif '_e' in query:
-        r = s.get(bigg_web_api + str(query.lower().replace('_e','')))
+        r = s.get(bigg_web_api + str(query.lower().replace('_e',''))) # removing compartment identifier from query
         if r.status_code == 200:
 
             db_links = r.json()['database_links']
@@ -125,7 +125,7 @@ for query in kecoli74_metabolites:
 
                     kecoli74_metabolites_biocyc[query] = biocyc_ids
     else:
-        r = s.get(bigg_web_api + str(query))
+        r = s.get(bigg_web_api + str(query)) # using default case
         if r.status_code == 200:
 
             db_links = r.json()['database_links']
