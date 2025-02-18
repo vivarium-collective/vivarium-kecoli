@@ -42,4 +42,16 @@ def query_bigg2biocyc(query,session):
 
     return biocyc_mapping
 
+def update_results_dict (results_dict,query,biocyc_mapping,wd):
+    dir_vEcoli = os.path.join(wd,'resources','vEcoli')
+    vEcoli_bulk = np.loadtxt(os.path.join(dir_vEcoli, 'bulk_molecule_ids.txt'), delimiter='\t', dtype=str)
+
+    vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
+
+    if len(biocyc_mapping)>0:
+        biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
+        if len(biocyc_ids)>0:
+            results_dict[query] = biocyc_mapping
+    return results_dict
+
 #%%

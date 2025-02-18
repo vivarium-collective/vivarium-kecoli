@@ -32,7 +32,8 @@ os.makedirs(output_mapping, exist_ok=True)
 dir_credentials = os.path.join(wd,'credentials')
 
 #%%
-from utils.mapping import biocyc_credentials, query_bigg2biocyc
+from utils.mapping import biocyc_credentials, query_bigg2biocyc, update_results_dict
+
 
 s = biocyc_credentials(dir_credentials)
 
@@ -66,40 +67,28 @@ for query in kecoli74_metabolites:
 
     biocyc_mapping = query_bigg2biocyc(query_send,s)
 
-    if len(biocyc_mapping)>0:
-        biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
-        if len(biocyc_ids)>0:
-            kecoli74_metabolites_biocyc[query] = biocyc_mapping
-
+    if len(biocyc_mapping) > 0:
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
 
     elif len(query) == 3:
 
         query_send  = str(query.lower()) + '__L' # for finding L-amino acids
         biocyc_mapping = query_bigg2biocyc(query_send,s)
 
-        if len(biocyc_mapping) > 0:
-            biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
-            if len(biocyc_ids) > 0:
-                kecoli74_metabolites_biocyc[query] = biocyc_mapping
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
 
     elif '_e' in query:
 
         query_send = str(query.lower().replace('_e',''))  # removing compartment identifier from query
         biocyc_mapping = query_bigg2biocyc(query_send, s)
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
 
-        if len(biocyc_mapping) > 0:
-            biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
-            if len(biocyc_ids) > 0:
-                kecoli74_metabolites_biocyc[query] = biocyc_mapping
 
     else:
         query_send = query
         biocyc_mapping = query_bigg2biocyc(query_send, s)
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
 
-        if len(biocyc_mapping) > 0:
-            biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
-            if len(biocyc_ids) > 0:
-                kecoli74_metabolites_biocyc[query] = biocyc_mapping
 
 
 
