@@ -31,14 +31,11 @@ os.makedirs(output_mapping, exist_ok=True)
 dir_credentials = os.path.join(wd,'credentials')
 
 #%%
+from utils.mapping import biocyc_credentials
 
-s = requests.Session()
+s = biocyc_credentials(dir_credentials)
 
-with open('biocyc_credentials.json','r') as f:
-    credentials = json.load(f)
 
-s.post('https://websvc.biocyc.org/credentials/login/',
-       data={'email': credentials['email'], 'password': credentials['password']})
 
 #%%
 resources_bigg = os.path.join('resources', 'bigg')
