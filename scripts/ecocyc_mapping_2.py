@@ -7,6 +7,7 @@ import libsbml
 import json
 import time
 from basico import *
+import pickle
 
 #%%
 
@@ -174,7 +175,9 @@ for idx in range(len(kecoli74_mapping_manual)):
     ketchup_id = kecoli74_mapping_manual.index[idx]
     kecoli74_metabolites_biocyc[ketchup_id] = [kecoli74_mapping_manual['BioCyc'][idx]]
 
-
+#%%
+with open(os.path.join(output_mapping,'ecocyc_mapping_kecoli74.json'), 'w') as f:
+    json.dump(kecoli74_metabolites_biocyc,f, indent=2)
 
 #%% kecoli rxn_mapping
 
@@ -277,7 +280,12 @@ for idx in range(len(vEcoli_metabolism)):
     StoicMat = pd.concat([StoicMat,dict_rxn_df])
 
 StoicMat = pd.DataFrame(data=np.nan_to_num(StoicMat,copy=True,nan=0.0),index=StoicMat.index,columns=StoicMat.columns)
-StoicMat.to_csv(os.path.join(resources_vEcoli,'StoicMat.txt'),sep='\t',index=True,header=True)
+# StoicMat.to_csv(os.path.join(resources_vEcoli,'StoicMat.txt'),sep='\t',index=True,header=True)
+#%%
+# with open (os.path.join(output_mapping,'StoicMat.pickle'),'wb') as f:
+#     pickle.dump(StoicMat,f)
+StoicMat.to_csv(os.path.join(output_mapping, 'StoicMat.txt'), sep='\t', index=True, header=True)
+
 
 #%%
 
