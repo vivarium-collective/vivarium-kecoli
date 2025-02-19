@@ -5,9 +5,25 @@ import numpy as np
 import pandas as pd
 
 
-plt.rcParams['figure.dpi'] = 300
+plt.rcParams['figure.dpi'] = 90
 
 #%%
+
+model_name = 'E_coli_Millard2016'
+wd = os.getcwd().replace('scripts', '')
+output_dir = os.path.join(wd,'output',model_name)
+
+os.makedirs(output_dir, exist_ok=True)
+
+output_results = os.path.join(output_dir,'results')
+output_plots = os.path.join(output_dir,'plots')
+output_mapping = os.path.join(output_dir,'mapping')
+
+os.makedirs(output_results, exist_ok=True)
+os.makedirs(output_plots, exist_ok=True)
+os.makedirs(output_mapping, exist_ok=True)
+
+
 
 model_dir = os.path.join('models')
 model_millard = load_model(os.path.join(model_dir,'E_coli_Millard2016.xml'))
@@ -15,6 +31,8 @@ model_millard = load_model(os.path.join(model_dir,'E_coli_Millard2016.xml'))
 species_all = get_species(model=model_millard)
 rxn_all = get_reactions(model=model_millard)
 ic_default = species_all.initial_concentration
+
+
 
 #%%
 
@@ -36,6 +54,6 @@ for sp in sp_plot:
     y_vals = sp_traj/max(sp_traj)
     axs.plot(result.index, y_vals, label=sp)
 axs.legend(bbox_to_anchor=(0.95, 1))
-plt.show()
+plt.savefig(os.path.join(output_plots,'timecourse_default.png'))
 
 #%%
