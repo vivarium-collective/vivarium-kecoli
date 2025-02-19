@@ -68,5 +68,15 @@ def rxn_mapping_sbml (model_name,wd):
 
     rxn_mapping = pd.DataFrame(data=np.zeros((len(species_all), len(rxn_all))), index=species_all, columns=rxn_all)
 
+    for reaction in model.getListOfReactions():
+
+        for reactant in reaction.getListOfReactants():
+            species_name = str(model.getSpecies(reactant.species).name)
+            rxn_mapping.loc[species_name, reaction.id] = -1
+
+        for product in reaction.getListOfProducts():
+            species_name = str(model.getSpecies(product.species).name)
+            rxn_mapping.loc[species_name, reaction.id] = 1
+
     return rxn_mapping
 #%%
