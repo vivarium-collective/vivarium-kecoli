@@ -54,7 +54,7 @@ def update_results_dict (results_dict,query,biocyc_mapping,wd):
     if len(biocyc_mapping)>0:
         biocyc_ids = list(np.array(biocyc_mapping)[np.where(np.isin(biocyc_mapping, vEcoli_bulk))[0]])
         if len(biocyc_ids)>0:
-            results_dict[query] = biocyc_mapping
+            results_dict[query] = biocyc_ids
     return results_dict
 
 def rxn_mapping_sbml (model_name,wd):
@@ -81,7 +81,7 @@ def rxn_mapping_sbml (model_name,wd):
 
     return rxn_mapping
 
-def enz_mapping_ketchup(model_name,wd):
+def enz_mapping_ketchup(model_name,wd,biocyc_mapping_dict):
     dir_models = os.path.join(wd,'models')
     model_basico = load_model(os.path.join(dir_models,str(model_name)+'.xml'))
     species_basico = get_species(model=model_basico)
@@ -90,7 +90,7 @@ def enz_mapping_ketchup(model_name,wd):
     enz_pattern = r'^[A-Z]\d+_ENZ$'
     enz_species = []
 
-    for species in list(species_kecoli74.index):
+    for species in list(species_basico.index):
         if re.match(enz_pattern, species):
             enz_species.append(species)
     rxn_mapping = rxn_mapping_sbml(model_name,wd)
@@ -100,21 +100,21 @@ def enz_mapping_ketchup(model_name,wd):
     for enz in enz_species:
         enz_rxns_idxs = np.where(rxn_mapping.loc[enz, :] < 0)[0]
         rxn_id_sbml = np.array(rxn_mapping.columns)[enz_rxns_idxs]
-        rxn_id_basico = np.array(rxns_kecoli74.index)[enz_rxns_idxs]
+        rxn_id_basico = np.array(rxns_basico.index)[enz_rxns_idxs]
         for rxn_id in rxn_id_sbml:
             enz_row = {}
             enz_row['enz'] = enz
             enz_row['rxn_id'] = rxn_id
             targets_idx = np.where(rxn_mapping.loc[:, rxn_id] < 0)[0]
-            targets_rxn = list(np.array(species_kecoli74.index)[targets_idx])
+            targets_rxn = list(np.array(species_basico.index)[targets_idx])
             targets_rxn.remove(enz)
             enz_row['binding targets'] = targets_rxn
             products_idx = np.where(rxn_mapping.loc[:, rxn_id] > 0)[0]
-            products_rxn = list(np.array(species_kecoli74.index)[products_idx])
+            products_rxn = list(np.array(species_basico.index)[products_idx])
             enz_row['products'] = products_rxn
             # enz_mapping = pd.concat([enz_mapping,pd.DataFrame(enz_row)])
-            if np.isin(targets_rxn, list(kecoli74_metabolites_biocyc.keys())).all():
-                targets_biocyc = kecoli74_metabolites_biocyc[targets_rxn[0]]
+            if np.isin(targets_rxn, list(biocyc_mapping_dict.keys())).all():
+                targets_biocyc = biocyc_mapping_dict[targets_rxn[0]]
                 if len(targets_biocyc) == 1:
                     enz_row['biocyc_id'] = targets_biocyc[0]
                     enz_mapping = pd.concat([enz_mapping, pd.DataFrame(enz_row)])

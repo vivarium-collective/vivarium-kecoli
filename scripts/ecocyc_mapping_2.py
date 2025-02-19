@@ -32,18 +32,21 @@ os.makedirs(output_mapping, exist_ok=True)
 dir_credentials = os.path.join(wd,'credentials')
 
 #%%
-from utils.mapping import biocyc_credentials, query_bigg2biocyc, update_results_dict, rxn_mapping_sbml
-
+from utils.mapping import (biocyc_credentials,
+                           query_bigg2biocyc,
+                           update_results_dict,
+                           rxn_mapping_sbml,
+                           enz_mapping_ketchup)
 
 s = biocyc_credentials(dir_credentials)
 
 
 
 #%%
-resources_bigg = os.path.join('resources', 'bigg')
-resources_ecocyc = os.path.join('resources', 'ecocyc')
-resources_vEcoli = os.path.join('resources', 'vEcoli')
-resources_ketchup = os.path.join('resources', 'ketchup')
+resources_bigg = os.path.join(wd,'resources', 'bigg')
+resources_ecocyc = os.path.join(wd,'resources', 'ecocyc')
+resources_vEcoli = os.path.join(wd,'resources', 'vEcoli')
+resources_ketchup = os.path.join(wd,'resources', 'ketchup')
 
 bigg_web_api = 'http://bigg.ucsd.edu/api/v2/universal/metabolites/'
 
@@ -81,6 +84,12 @@ for query in kecoli74_metabolites:
 
         query_send = str(query.lower().replace('_e',''))  # removing compartment identifier from query
         biocyc_mapping = query_bigg2biocyc(query_send, s)
+        ## temp break point
+
+        if query == 'SO4_e':
+            print(query)
+
+        ## temp break point
         kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
 
 
@@ -128,7 +137,7 @@ with open(os.path.join(output_mapping,'ecocyc_mapping_kecoli74.json'), 'w') as f
 
 #%% kecoli rxn_mapping
 rxn_mapping = rxn_mapping_sbml(model_name,wd)
-
+enz_mapping = enz_mapping_ketchup(model_name,wd,kecoli74_metabolites_biocyc)
 #%%
 # reader = libsbml.SBMLReader()
 #
