@@ -2,6 +2,8 @@ import json
 import requests
 import os
 import numpy as np
+import pandas as pd
+import libsbml
 
 
 #%%
@@ -36,7 +38,7 @@ def query_bigg2biocyc(query,session):
 
             else:
                 biocyc_ids = [entry['id'].replace('META:', '') for entry in biocyc_db]
-                # biocyc_ids = list(np.array(biocyc_ids_search)[np.where(np.isin(biocyc_ids_search, vEcoli_bulk))[0]])
+
 
                 biocyc_mapping = biocyc_ids
 
@@ -54,4 +56,17 @@ def update_results_dict (results_dict,query,biocyc_mapping,wd):
             results_dict[query] = biocyc_mapping
     return results_dict
 
+def rxn_mapping_sbml (model_name,wd):
+
+    dir_models = os.path.join(wd,'models')
+    reader = libsbml.SBMLReader()
+
+    model = reader.readSBMLFromFile(os.path.join(dir_models, str(model_name)+".xml")).getModel()
+
+    species_all = [sp.getName() for sp in model.getListOfSpecies()]
+    rxn_all = [rxn.id for rxn in model.getListOfReactions()]
+
+    rxn_mapping = pd.DataFrame(data=np.zeros((len(species_all), len(rxn_all))), index=species_all, columns=rxn_all)
+
+    return rxn_mapping
 #%%
