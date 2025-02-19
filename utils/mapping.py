@@ -135,4 +135,10 @@ def enz_mapping_ketchup(model_name,wd,biocyc_mapping_dict):
 
     return enz_mapping
 
+def gen_StoicMat_vEcoli(model_name,wd):
+
+    StoicMat = pd.DataFrame()
+
+
+
 #%%
