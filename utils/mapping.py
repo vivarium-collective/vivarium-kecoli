@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 import libsbml
+from basico import *
 
 
 #%%
@@ -81,8 +82,18 @@ def rxn_mapping_sbml (model_name,wd):
     return rxn_mapping
 
 def enz_mapping_ketchup(model_name,wd):
+    dir_models = os.path.join(wd,'models')
+    model_basico = load_model(os.path.join(dir_models,str(model_name)+'.xml'))
+    species_basico = get_species(model=model_basico)
+    rxns_basico = get_reactions(model=model_basico)
 
-    
+    enz_pattern = r'^[A-Z]\d+_ENZ$'
+    enz_species = []
+
+    for species in list(species_kecoli74.index):
+        if re.match(enz_pattern, species):
+            enz_species.append(species)
+    rxn_mapping = rxn_mapping_sbml(model_name,wd)
 
     enz_mapping = pd.DataFrame()
 
