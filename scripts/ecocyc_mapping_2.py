@@ -84,12 +84,7 @@ for query in kecoli74_metabolites:
 
         query_send = str(query.lower().replace('_e',''))  # removing compartment identifier from query
         biocyc_mapping = query_bigg2biocyc(query_send, s)
-        ## temp break point
 
-        if query == 'SO4_e':
-            print(query)
-
-        ## temp break point
         kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
 
 
