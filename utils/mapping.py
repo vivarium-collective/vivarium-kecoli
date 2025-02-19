@@ -79,4 +79,49 @@ def rxn_mapping_sbml (model_name,wd):
             rxn_mapping.loc[species_name, reaction.id] = 1
 
     return rxn_mapping
+
+def enz_mapping_ketchup(model_name,wd):
+
+    
+
+    enz_mapping = pd.DataFrame()
+
+    for enz in enz_species:
+        enz_rxns_idxs = np.where(rxn_mapping.loc[enz, :] < 0)[0]
+        rxn_id_sbml = np.array(rxn_mapping.columns)[enz_rxns_idxs]
+        rxn_id_basico = np.array(rxns_kecoli74.index)[enz_rxns_idxs]
+        for rxn_id in rxn_id_sbml:
+            enz_row = {}
+            enz_row['enz'] = enz
+            enz_row['rxn_id'] = rxn_id
+            targets_idx = np.where(rxn_mapping.loc[:, rxn_id] < 0)[0]
+            targets_rxn = list(np.array(species_kecoli74.index)[targets_idx])
+            targets_rxn.remove(enz)
+            enz_row['binding targets'] = targets_rxn
+            products_idx = np.where(rxn_mapping.loc[:, rxn_id] > 0)[0]
+            products_rxn = list(np.array(species_kecoli74.index)[products_idx])
+            enz_row['products'] = products_rxn
+            # enz_mapping = pd.concat([enz_mapping,pd.DataFrame(enz_row)])
+            if np.isin(targets_rxn, list(kecoli74_metabolites_biocyc.keys())).all():
+                targets_biocyc = kecoli74_metabolites_biocyc[targets_rxn[0]]
+                if len(targets_biocyc) == 1:
+                    enz_row['biocyc_id'] = targets_biocyc[0]
+                    enz_mapping = pd.concat([enz_mapping, pd.DataFrame(enz_row)])
+                else:
+                    for target in targets_biocyc:
+                        enz_row_new = {}
+                        for key, val in enz_row.items():
+                            enz_row_new[key] = val
+                        enz_row_new['biocyc_id'] = target
+                        enz_mapping = pd.concat([enz_mapping, pd.DataFrame(enz_row_new)])
+
+                # enz_row['vEcoli'] = vEcoli_mapping.loc[targets_rxn,'vEcoli']
+            else:
+                enz_row['biocyc_id'] = 'NA'
+                # enz_row['vEcoli'] = 'NA'
+                enz_mapping = pd.concat([enz_mapping, pd.DataFrame(enz_row)])
+    enz_mapping = enz_mapping.set_index('rxn_id')
+
+    return enz_mapping
+
 #%%

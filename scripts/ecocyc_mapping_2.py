@@ -32,7 +32,7 @@ os.makedirs(output_mapping, exist_ok=True)
 dir_credentials = os.path.join(wd,'credentials')
 
 #%%
-from utils.mapping import biocyc_credentials, query_bigg2biocyc, update_results_dict
+from utils.mapping import biocyc_credentials, query_bigg2biocyc, update_results_dict, rxn_mapping_sbml
 
 
 s = biocyc_credentials(dir_credentials)
@@ -127,30 +127,31 @@ with open(os.path.join(output_mapping,'ecocyc_mapping_kecoli74.json'), 'w') as f
     json.dump(kecoli74_metabolites_biocyc,f, indent=2)
 
 #%% kecoli rxn_mapping
+rxn_mapping = rxn_mapping_sbml(model_name,wd)
 
-
-reader = libsbml.SBMLReader()
-
-model = reader.readSBMLFromFile(os.path.join("models","k-ecoli74.xml")).getModel()
-
-
-species_all = [sp.getName() for sp in model.getListOfSpecies()]
-rxn_all = [rxn.id for rxn in model.getListOfReactions()]
-
-rxn_mapping = pd.DataFrame(data=np.zeros((len(species_all),len(rxn_all))), index=species_all, columns=rxn_all)
-
-
-for reaction in model.getListOfReactions():
-
-    for reactant in reaction.getListOfReactants():
-
-        species_name = str(model.getSpecies(reactant.species).name)
-        rxn_mapping.loc[species_name,reaction.id] = -1
-
-    for product in reaction.getListOfProducts():
-
-        species_name = str(model.getSpecies(product.species).name)
-        rxn_mapping.loc[species_name,reaction.id] = 1
+#%%
+# reader = libsbml.SBMLReader()
+#
+# model = reader.readSBMLFromFile(os.path.join("models","k-ecoli74.xml")).getModel()
+#
+#
+# species_all = [sp.getName() for sp in model.getListOfSpecies()]
+# rxn_all = [rxn.id for rxn in model.getListOfReactions()]
+#
+# rxn_mapping = pd.DataFrame(data=np.zeros((len(species_all),len(rxn_all))), index=species_all, columns=rxn_all)
+#
+#
+# for reaction in model.getListOfReactions():
+#
+#     for reactant in reaction.getListOfReactants():
+#
+#         species_name = str(model.getSpecies(reactant.species).name)
+#         rxn_mapping.loc[species_name,reaction.id] = -1
+#
+#     for product in reaction.getListOfProducts():
+#
+#         species_name = str(model.getSpecies(product.species).name)
+#         rxn_mapping.loc[species_name,reaction.id] = 1
 
 #%%
 model_kecoli74 = load_model(os.path.join('models','k-ecoli74.xml'))
