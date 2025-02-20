@@ -61,7 +61,7 @@ vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
 
 kecoli74_metabolites_biocyc = {}
 query_failed = []
-kecoli74_mapping_multi = {}
+
 for query in kecoli74_metabolites:
 
     time.sleep(0.15)

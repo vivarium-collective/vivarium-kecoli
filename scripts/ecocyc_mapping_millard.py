@@ -8,13 +8,39 @@ import json
 import time
 from basico import *
 
-s = requests.Session()
+#%%
 
-with open('biocyc_credentials.json','r') as f:
-    credentials = json.load(f)
 
-s.post('https://websvc.biocyc.org/credentials/login/',
-       data={'email': credentials['email'], 'password': credentials['password']})
+model_name = "E_coli_Millard2016"
+
+wd = os.getcwd().replace('scripts', '')
+
+model_dir = os.path.join(wd,'models')
+
+output_dir = os.path.join(wd,'output',model_name)
+
+os.makedirs(output_dir, exist_ok=True)
+
+output_results = os.path.join(output_dir,'results')
+output_plots = os.path.join(output_dir,'plots')
+output_mapping = os.path.join(output_dir,'mapping')
+
+os.makedirs(output_results, exist_ok=True)
+os.makedirs(output_plots, exist_ok=True)
+os.makedirs(output_mapping, exist_ok=True)
+
+dir_credentials = os.path.join(wd,'credentials')
+
+#%%
+from utils.mapping import (biocyc_credentials,
+                           query_bigg2biocyc,
+                           update_results_dict,
+                           rxn_mapping_sbml,
+                           enz_mapping_ketchup)
+
+s = biocyc_credentials(dir_credentials)
+
+
 
 #%%
 resources_bigg = os.path.join('resources', 'bigg')
@@ -25,7 +51,7 @@ resources_ketchup = os.path.join('resources', 'ketchup')
 bigg_web_api = 'http://bigg.ucsd.edu/api/v2/universal/metabolites/'
 
 model_dir = os.path.join('models')
-model_millard = load_model(os.path.join(model_dir,'E_coli_Millard2016.xml'))
+model_millard = load_model(os.path.join(model_dir,str(model_name)+'.xml'))
 
 species_all = get_species(model=model_millard)
 rxn_all = get_reactions(model=model_millard)
@@ -42,11 +68,40 @@ millard_species = list(species_all.index)
 
 millard_metabolites_biocyc = {}
 query_failed = []
-millard_mapping_multi = {}
 
 
 for query in millard_species:
 
+    time.sleep(0.15)
+
+    query_send = str(query.lower())  # query with lowercase first
+
+    biocyc_mapping = query_bigg2biocyc(query_send, s)
+
+    if len(biocyc_mapping) > 0:
+        millard_metabolites_biocyc = update_results_dict(millard_metabolites_biocyc, query, biocyc_mapping, wd)
+
+    elif len(query) == 3:
+
+        query_send = str(query.lower()) + '__L'  # for finding L-amino acids
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+
+        millard_metabolites_biocyc = update_results_dict(millard_metabolites_biocyc, query, biocyc_mapping, wd)
+
+    elif '_e' in query:
+
+        query_send = str(query.lower().replace('_e', ''))  # removing compartment identifier from query
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+
+        millard_metabolites_biocyc = update_results_dict(millard_metabolites_biocyc, query, biocyc_mapping, wd)
+
+
+    else:
+        query_send = query
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+        millard_metabolites_biocyc = update_results_dict(millard_metabolites_biocyc, query, biocyc_mapping, wd)
+
+    #%%
     time.sleep(0.15)
 
     r = s.get(bigg_web_api + str(query.lower()))
@@ -134,11 +189,13 @@ for query in millard_species:
 
                     millard_metabolites_biocyc[query] = biocyc_ids
 
+#%%
+
 for query in millard_species:
     if query not in millard_metabolites_biocyc.keys():
         query_failed.append(query)
 
-np.savetxt('mapping_results/query_failed_millard.txt',query_failed,fmt='%s')
+np.savetxt(os.path.join(output_mapping,'query_failed_millard.txt'),query_failed,fmt='%s')
 
 
 #%%
@@ -155,5 +212,10 @@ for idx,name in enumerate(biocyc_names):
     r = s.get(url)
     if r.status_code == 200:
         millard_metabolites_biocyc[biocyc_query[idx]] = [r.json()['RESULTS'][0]['OBJECT-ID']]
+
+#%%
+
+with open(os.path.join(output_mapping,'ecocyc_mapping_millard_partial.json'), 'w') as f:
+    json.dump(millard_metabolites_biocyc,f, indent=2)
 
 #%%
