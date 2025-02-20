@@ -5,138 +5,203 @@ import requests
 import re
 import libsbml
 import json
+import time
 from basico import *
+import pickle
 
-s = requests.Session()
-
-with open('biocyc_credentials.json','r') as f:
-    credentials = json.load(f)
-
-s.post('https://websvc.biocyc.org/credentials/login/',
-       data={'email': credentials['email'], 'password': credentials['password']})
 #%%
-resources_bigg = os.path.join('resources', 'bigg')
-resources_ecocyc = os.path.join('resources', 'ecocyc')
-resources_vEcoli = os.path.join('resources', 'vEcoli')
 
-ecocyc_cc = pd.read_csv(os.path.join(resources_ecocyc, 'Central-carbon-metabolism.txt'),
-                        sep='\t',header=0,index_col=0)
-bigg_metabolites = pd.read_csv(os.path.join(resources_bigg, 'bigg_models_metabolites.txt'),
-                               sep='\t',header=0,index_col=0)
-bigg_rxns = pd.read_csv(os.path.join(resources_bigg,'bigg_models_reactions.txt'),
-                        sep='\t',header=0,index_col=0)
-ecocyc_metabolite_results = pd.read_csv(os.path.join(resources_ecocyc, 'metabolite_translation_results.txt'),
-                                        sep='\t',header=0,index_col=0)
-ecocyc_metabolite_results_2 = pd.read_csv(os.path.join(resources_ecocyc, 'ketchup-metabolites.txt'),
-                                          sep='\t',header=0,index_col=0)
+model_name = "k-ecoli74"
 
+wd = os.getcwd().replace('scripts', '')
+
+model_dir = os.path.join(wd,'models')
+
+output_dir = os.path.join(wd,'output',model_name)
+
+os.makedirs(output_dir, exist_ok=True)
+
+output_results = os.path.join(output_dir,'results')
+output_plots = os.path.join(output_dir,'plots')
+output_mapping = os.path.join(output_dir,'mapping')
+
+os.makedirs(output_results, exist_ok=True)
+os.makedirs(output_plots, exist_ok=True)
+os.makedirs(output_mapping, exist_ok=True)
+
+dir_credentials = os.path.join(wd,'credentials')
+
+#%%
+from utils.mapping import (biocyc_credentials,
+                           query_bigg2biocyc,
+                           update_results_dict,
+                           rxn_mapping_sbml,
+                           enz_mapping_ketchup)
+
+s = biocyc_credentials(dir_credentials)
+
+
+
+#%%
+resources_bigg = os.path.join(wd,'resources', 'bigg')
+resources_ecocyc = os.path.join(wd,'resources', 'ecocyc')
+resources_vEcoli = os.path.join(wd,'resources', 'vEcoli')
+resources_ketchup = os.path.join(wd,'resources', 'ketchup')
+
+bigg_web_api = 'http://bigg.ucsd.edu/api/v2/universal/metabolites/'
+
+kecoli74_metabolites = pd.read_excel(os.path.join(resources_ketchup, 'ketchup_supplementary.xlsx'),sheet_name='ST2')['ID'].to_list()
+#%%
 vEcoli_bulk = np.loadtxt(os.path.join(resources_vEcoli, 'bulk_molecule_ids.txt'),delimiter='\t',dtype=str)
 
 vEcoli_bulk = [x.split('[')[0] for x in vEcoli_bulk]
 
+#%% biocyc web service new
+
+
+kecoli74_metabolites_biocyc = {}
+query_failed = []
+
+for query in kecoli74_metabolites:
+
+    time.sleep(0.15)
+
+    query_send = str(query.lower()) # query with lowercase first
+
+    biocyc_mapping = query_bigg2biocyc(query_send,s)
+
+    if len(biocyc_mapping) > 0:
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
+
+    elif len(query) == 3:
+
+        query_send  = str(query.lower()) + '__L' # for finding L-amino acids
+        biocyc_mapping = query_bigg2biocyc(query_send,s)
+
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
+
+    elif '_e' in query:
+
+        query_send = str(query.lower().replace('_e',''))  # removing compartment identifier from query
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
+
+
+    else:
+        query_send = query
+        biocyc_mapping = query_bigg2biocyc(query_send, s)
+        kecoli74_metabolites_biocyc = update_results_dict(kecoli74_metabolites_biocyc,query,biocyc_mapping,wd)
+
+
+
+
+for query in kecoli74_metabolites:
+    if query not in kecoli74_metabolites_biocyc.keys():
+        query_failed.append(query)
+
+
+np.savetxt('mapping_results/query_failed_kecoli74.txt',query_failed,fmt='%s')
+
 #%%
-biocyc_names = ecocyc_metabolite_results['BioCyc Common-Name'].values
-biocyc_query = ecocyc_metabolite_results.index
+metabolite_translation_kecoli74 = pd.read_csv(os.path.join('mapping_results', 'translation_results_kecoli74.txt'),
+                                        sep='\t',header=0,index_col=0)
+
+biocyc_names = metabolite_translation_kecoli74['BioCyc Common-Name'].values
+biocyc_query = metabolite_translation_kecoli74.index
 biocyc_id = {}
 
 for idx,name in enumerate(biocyc_names):
     url = f'https://websvc.biocyc.org/ECOLI/name-search?object={name}&class=Compounds&fmt=json'
     r = s.get(url)
     if r.status_code == 200:
-        biocyc_id[biocyc_query[idx]] = r.json()['RESULTS'][0]['OBJECT-ID']
+        kecoli74_metabolites_biocyc[biocyc_query[idx]] = [r.json()['RESULTS'][0]['OBJECT-ID']]
 
-for idx in range(len(ecocyc_metabolite_results_2)):
+#%%
 
-    biocyc_id[ecocyc_metabolite_results_2.index[idx]] = ecocyc_metabolite_results_2.BioCyc.values[idx]
+kecoli74_mapping_manual = pd.read_csv('mapping_results/query_manual_kecoli74.txt',sep='\t',index_col=0,header=0)
 
-#%% vEcoli cross reference
-vEcoli_mapping = pd.DataFrame(index=biocyc_id.keys())
-vEcoli_mapping['biocyc_id'] = biocyc_id.values()
+for idx in range(len(kecoli74_mapping_manual)):
 
-vEcoli_mapping['vEcoli'] = np.isin(list(biocyc_id.values()),vEcoli_bulk)
+    ketchup_id = kecoli74_mapping_manual.index[idx]
+    kecoli74_metabolites_biocyc[ketchup_id] = [kecoli74_mapping_manual['BioCyc'][idx]]
+
+#%%
+with open(os.path.join(output_mapping,'ecocyc_mapping_kecoli74.json'), 'w') as f:
+    json.dump(kecoli74_metabolites_biocyc,f, indent=2)
 
 #%% kecoli rxn_mapping
+rxn_mapping = rxn_mapping_sbml(model_name,wd)
+enz_mapping = enz_mapping_ketchup(model_name,wd,kecoli74_metabolites_biocyc)
 
 
-reader = libsbml.SBMLReader()
+enz_mapping.to_csv('mapping_results/enz_mapping_kecoli74.txt',sep='\t')
+#%%
 
-model = reader.readSBMLFromFile(os.path.join("models","k-ecoli74.xml")).getModel()
+vEcoli_metabolism = pd.read_csv(os.path.join(resources_vEcoli,'metabolic_reactions.tsv'),sep='\t',index_col=0,header=4)
 
+StoicMat = pd.DataFrame()
 
-species_all = [sp.getName() for sp in model.getListOfSpecies()]
-rxn_all = [rxn.id for rxn in model.getListOfReactions()]
+for idx in range(len(vEcoli_metabolism)):
+    print(idx)
+    rxn_stoic = vEcoli_metabolism["stoichiometry"][idx]
+    rxn_stoic = rxn_stoic.replace("null","np.nan")
+    exec(f"dict_rxn={rxn_stoic}")
+    dict_rxn_df = pd.DataFrame(dict_rxn,index=[vEcoli_metabolism.index[idx]])
 
-rxn_mapping = pd.DataFrame(data=np.zeros((len(species_all),len(rxn_all))), index=species_all, columns=rxn_all)
+    StoicMat = pd.concat([StoicMat,dict_rxn_df])
 
+StoicMat = pd.DataFrame(data=np.nan_to_num(StoicMat,copy=True,nan=0.0),index=StoicMat.index,columns=StoicMat.columns)
+# StoicMat.to_csv(os.path.join(resources_vEcoli,'StoicMat.txt'),sep='\t',index=True,header=True)
+#%%
+# with open (os.path.join(output_mapping,'StoicMat.pickle'),'wb') as f:
+#     pickle.dump(StoicMat,f)
+StoicMat.to_csv(os.path.join(output_mapping, 'StoicMat.txt'), sep='\t', index=True, header=True)
 
-for reaction in model.getListOfReactions():
-
-    for reactant in reaction.getListOfReactants():
-
-        species_name = str(model.getSpecies(reactant.species).name)
-        rxn_mapping.loc[species_name,reaction.id] = -1
-
-    for product in reaction.getListOfProducts():
-
-        species_name = str(model.getSpecies(product.species).name)
-        rxn_mapping.loc[species_name,reaction.id] = 1
-
-
-#%% ENZ mapping
-
-model_kecoli74 = load_model(os.path.join('models','k-ecoli74.xml'))
-species_kecoli74 = get_species(model=model_kecoli74)
-rxns_kecoli74 = get_reactions(model=model_kecoli74)
-
-enz_pattern = r'^[A-Z]\d+_ENZ$'
-
-enz_species = []
-
-for species in list(species_kecoli74.index):
-    if re.match(enz_pattern, species):
-        enz_species.append(species)
 
 #%%
-# iterate through enz_species
-# find rxn_mapping for enz_species = -1
-# iterate through rxns
-# find other reactants
-# check for inhibition
-enz_mapping = pd.DataFrame()
 
-for enz in enz_species:
-    enz_rxns_idxs = np.where(rxn_mapping.loc[enz,:]<0)[0]
-    rxn_id_sbml = np.array(rxn_mapping.columns)[enz_rxns_idxs]
-    rxn_id_basico = np.array(rxns_kecoli74.index)[enz_rxns_idxs]
-    for rxn_id in rxn_id_sbml:
-        enz_row = {}
-        enz_row['enz'] = enz
-        enz_row['rxn_id'] = rxn_id
-        targets_idx = np.where(rxn_mapping.loc[:,rxn_id]<0)[0]
-        targets_rxn = list(np.array(species_kecoli74.index)[targets_idx])
-        targets_rxn.remove(enz)
-        enz_row['binding targets'] = targets_rxn
-        products_idx = np.where(rxn_mapping.loc[:,rxn_id]>0)[0]
-        products_rxn = list(np.array(species_kecoli74.index)[products_idx])
-        enz_row['products'] = products_rxn
-        # enz_mapping = pd.concat([enz_mapping,pd.DataFrame(enz_row)])
-        if np.isin(targets_rxn,list(vEcoli_mapping.index)).all():
-            enz_row['biocyc_id'] = vEcoli_mapping.loc[targets_rxn,'biocyc_id']
-            enz_row['vEcoli'] = vEcoli_mapping.loc[targets_rxn,'vEcoli']
-        else:
-            enz_row['biocyc_id'] = 'NA'
-            enz_row['vEcoli'] = 'NA'
-        enz_mapping = pd.concat([enz_mapping,pd.DataFrame(enz_row)])
-enz_mapping = enz_mapping.set_index('rxn_id')
+# species_StoicMat = [sp.split('[')[0] for sp in StoicMat.columns ]
+# sp_check = [True if sp in StoicMat.columns else False for sp in enz_mapping['biocyc_id']]
+
+sp_check = []
+
+for sp in enz_mapping['biocyc_id']:
+    check = [spm if sp==spm.split('[')[0] else None for spm in StoicMat.columns]
+    check = [x for x in check if x!=None]
+    sp_check.append(check)
+
+enz_mapping['species_vEcoli'] = sp_check
+
 #%%
-enz_mapping_new = {}
 
-for rxn in enz_mapping.index:
-    enz_row_new = dict(enz_mapping.loc[rxn])
+enz_mapping_vEcoli = []
+
+for target_idx in range(len(enz_mapping)):
+    sp_vEcoli = enz_mapping["species_vEcoli"][target_idx]
+    enz_vEcoli = []
+    for sp in sp_vEcoli:
+        rxn_idxs = np.where(StoicMat.loc[:,sp].values < 0)[0]
+        sp_rxns = StoicMat.index[rxn_idxs]
+        enz_sp = vEcoli_metabolism.loc[sp_rxns,'catalyzed_by'].values
+        # enz_sp = [x for xs in enz_sp for x in xs]
+        enz_vEcoli.append(enz_sp)
+    enz_vEcoli = [x for xs in enz_vEcoli for x in xs]
+
+    enz_vEcoli_new = []
+    for enz in enz_vEcoli:
+        enzs_str = enz[1:-1]
+        enzs_actual = enzs_str.split(',')
+        enzs_actual = [s.replace('"','').strip() for s in enzs_actual]
+        enz_vEcoli_new.append(enzs_actual)
+
+    enz_vEcoli_new =  [x for xs in enz_vEcoli_new for x in xs]
+    enz_vEcoli_new = list(np.unique(enz_vEcoli_new))
+    enz_mapping_vEcoli.append(enz_vEcoli_new)
+
+enz_mapping['enz_vEcoli'] = enz_mapping_vEcoli
+#%%
+enz_mapping.to_csv(os.path.join(output_mapping, 'enz_mapping_vEcoli.txt'), sep='\t', index=True, header=True)
 
 
-
-
-
-
-
+#%%
