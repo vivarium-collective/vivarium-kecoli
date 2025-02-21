@@ -203,5 +203,38 @@ enz_mapping['enz_vEcoli'] = enz_mapping_vEcoli
 #%%
 enz_mapping.to_csv(os.path.join(output_mapping, 'enz_mapping_vEcoli.txt'), sep='\t', index=True, header=True)
 
+#%%
+enz_products = {}
+
+for enz in enz_species:
+    rxns_prod = StoicMat.index[np.where(StoicMat.loc[:,enz]>0)[0]]
+    enz_rxn = {}
+    for rxn in rxns_prod:
+        prods_all = list(StoicMat.columns[np.where(StoicMat.loc[:,rxn]>0)[0]])
+        prods_all.remove(enz)
+        enz_rxn[rxn] = prods_all
+    enz_products[enz] =enz_rxn
+
+#%%
+
+
+
+
+#%% smart table api test
+
+smart_table_list = list(enz_mapping['biocyc_id'].values)
+
+smart_table_dict = {
+    "name": "smart_table_python",
+    "description": "test",
+    "pgdb": "ECOLI",
+    "type": "Compounds",
+    "values": smart_table_list[:5]
+}
+
+url_st = 'https://websvc.biocyc.org/st-create?format=json&orgid=ECOLI&class=Compounds'
+
+#%%
+rst = s.put(url=url_st,data=smart_table_dict)
 
 #%%
