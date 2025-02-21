@@ -231,6 +231,8 @@ for rxn_idx in range(np.shape(rxn_mapping)[1]):
         rxn_dict['product'] = prod
         enz_cat_rxns[cat_rxn] = rxn_dict
 
+pd.DataFrame(enz_cat_rxns).transpose().to_csv(os.path.join(output_mapping, 'enz_cat_rxns.txt'), sep='\t', index=True, header=True)
+
 #%%
 enz_df_full = pd.DataFrame()
 
