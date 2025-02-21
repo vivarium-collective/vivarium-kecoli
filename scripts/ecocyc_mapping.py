@@ -9,6 +9,8 @@ import time
 from basico import *
 import pickle
 
+from scripts.ecocyc_mapping_kecoli307 import products_rxn
+
 #%%
 
 model_name = "k-ecoli74"
@@ -214,6 +216,27 @@ for enz in enz_species:
         prods_all.remove(enz)
         enz_rxn[rxn] = prods_all
     enz_products[enz] =enz_rxn
+
+#%%
+
+enz_cat_rxns = {}
+
+for rxn_idx in range(np.shape(rxn_mapping)[1]):
+    if len(np.where(rxn_mapping.iloc[:,rxn_idx])[0])==2:
+        cat_rxn = rxn_mapping.columns[rxn_idx]
+        rxn_dict = {}
+        reac = rxn_mapping.index[np.where(rxn_mapping.iloc[:,rxn_idx]<0)[0][0]]
+        prod = rxn_mapping.index[np.where(rxn_mapping.iloc[:,rxn_idx]>0)[0][0]]
+        rxn_dict['reactant'] = reac
+        rxn_dict['product'] = prod
+        enz_cat_rxns[cat_rxn] = rxn_dict
+
+#%%
+
+
+
+
+
 
 #%%
 
