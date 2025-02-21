@@ -205,12 +205,12 @@ enz_mapping.to_csv(os.path.join(output_mapping, 'enz_mapping_vEcoli.txt'), sep='
 
 #%%
 enz_products = {}
-
+enz_species = list(np.unique(enz_mapping["enz"]))
 for enz in enz_species:
-    rxns_prod = StoicMat.index[np.where(StoicMat.loc[:,enz]>0)[0]]
+    rxns_prod = rxn_mapping.columns[np.where(rxn_mapping.loc[enz,:]>0)[0]]
     enz_rxn = {}
     for rxn in rxns_prod:
-        prods_all = list(StoicMat.columns[np.where(StoicMat.loc[:,rxn]>0)[0]])
+        prods_all = list(rxn_mapping.index[np.where(rxn_mapping.loc[:,rxn]>0)[0]])
         prods_all.remove(enz)
         enz_rxn[rxn] = prods_all
     enz_products[enz] =enz_rxn
