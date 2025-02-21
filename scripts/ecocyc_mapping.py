@@ -232,6 +232,38 @@ for rxn_idx in range(np.shape(rxn_mapping)[1]):
         enz_cat_rxns[cat_rxn] = rxn_dict
 
 #%%
+enz_df = pd.DataFrame()
+
+rxns_test = ['R_R55_6','R_R56_10']
+
+# for rxn in enz_cat_rxns.keys():
+
+for rxn in rxns_test:
+    rxn_dict = enz_cat_rxns[rxn]
+    substrates = rxn_dict['reactant'].split('+')
+    enz = list(filter(lambda x: 'ENZ' in x, substrates))[0]
+    substrates.remove(enz)
+    products = rxn_dict['product'].split('+')
+    products.remove(enz)
+    if len(products)!=0:
+        enz_dict = {}
+        enz_dict["enzyme"] = enz
+        enz_dict["substrates"] = substrates
+        enz_dict["produts"] = products
+        substrates_biocyc = [kecoli74_metabolites_biocyc[subs] for subs in substrates]
+        substrates_biocyc = list(np.unique([item for items in substrates_biocyc for item in items]))
+        enz_dict["substrates_biocyc"] = substrates_biocyc
+        products_biocyc = [kecoli74_metabolites_biocyc[prod] for prod in products]
+        products_biocyc = list(np.unique([item for items in products_biocyc for item in items]))
+        enz_dict["products_biocyc"] = products_biocyc
+    enz_df_current = pd.DataFrame({key:pd.Series(value) for key, value in enz_dict.items()})
+    enz_df = pd.concat([enz_df,enz_df_current],ignore_index=True)
+
+#%%
+
+
+
+#%%
 
 
 
