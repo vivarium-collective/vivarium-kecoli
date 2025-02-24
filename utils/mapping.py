@@ -157,4 +157,47 @@ def retrieve_cat_rxns(model_name,wd):
 
     return enz_cat_rxns
 
+def enz_mapping_biocyc(model_name,wd,biocyc_mapping_dict):
+    enz_df_full = pd.DataFrame()
+
+    enz_cat_rxns = retrieve_cat_rxns(model_name,wd)
+
+
+
+    enz_dict_all = {}
+
+
+    for rxn in enz_cat_rxns.keys():
+        rxn_dict = enz_cat_rxns[rxn]
+        substrates = rxn_dict['reactant'].split('+')
+        enz = list(filter(lambda x: 'ENZ' in x, substrates))[0]
+        substrates.remove(enz)
+        products = rxn_dict['product'].split('+')
+        products.remove(enz)
+        if len(products) != 0:
+            enz_dict = {}
+            enz_dict["enzyme"] = enz
+            enz_dict["substrates"] = list(np.unique(substrates))
+            enz_dict["produts"] = list(np.unique(products))
+            substrates_biocyc = [biocyc_mapping_dict[subs] for subs in substrates]
+            substrates_biocyc = list(np.unique([item for items in substrates_biocyc for item in items]))
+            enz_dict["substrates_biocyc"] = substrates_biocyc
+            products_biocyc = [biocyc_mapping_dict[prod] for prod in products]
+            products_biocyc = list(np.unique([item for items in products_biocyc for item in items]))
+            enz_dict["products_biocyc"] = products_biocyc
+
+            enz_df = pd.DataFrame(columns=list(enz_dict.keys()), index=['0'])
+            for col in enz_df.columns:
+                enz_df.loc['0', col] = enz_dict[col]
+
+            enz_dict_all[enz] = enz_dict
+
+            enz_df_full = pd.concat([enz_df_full, enz_df])
+
+    enz_df_full = enz_df_full.set_index('enzyme')
+
+
+
+    return enz_df_full
+
 #%%
