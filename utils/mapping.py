@@ -135,10 +135,26 @@ def enz_mapping_ketchup(model_name,wd,biocyc_mapping_dict):
 
     return enz_mapping
 
-def gen_StoicMat_vEcoli(model_name,wd):
+def gen_StoicMat_vEcoli(model_name,wd): #incomplete
 
     StoicMat = pd.DataFrame()
 
+    return StoicMat
 
+def retrieve_cat_rxns(model_name,wd):
+    rxn_mapping = rxn_mapping_sbml(model_name,wd)
+    enz_cat_rxns = {}
+
+    for rxn_idx in range(np.shape(rxn_mapping)[1]):
+        if len(np.where(rxn_mapping.iloc[:, rxn_idx])[0]) == 2:
+            cat_rxn = rxn_mapping.columns[rxn_idx]
+            rxn_dict = {}
+            reac = rxn_mapping.index[np.where(rxn_mapping.iloc[:, rxn_idx] < 0)[0][0]]
+            prod = rxn_mapping.index[np.where(rxn_mapping.iloc[:, rxn_idx] > 0)[0][0]]
+            rxn_dict['reactant'] = reac
+            rxn_dict['product'] = prod
+            enz_cat_rxns[cat_rxn] = rxn_dict
+
+    return enz_cat_rxns
 
 #%%
