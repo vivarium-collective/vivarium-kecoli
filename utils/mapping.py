@@ -162,11 +162,6 @@ def enz_mapping_biocyc(model_name,wd,biocyc_mapping_dict):
 
     enz_cat_rxns = retrieve_cat_rxns(model_name,wd)
 
-
-
-    enz_dict_all = {}
-
-
     for rxn in enz_cat_rxns.keys():
         rxn_dict = enz_cat_rxns[rxn]
         substrates = rxn_dict['reactant'].split('+')
@@ -190,13 +185,9 @@ def enz_mapping_biocyc(model_name,wd,biocyc_mapping_dict):
             for col in enz_df.columns:
                 enz_df.loc['0', col] = enz_dict[col]
 
-            enz_dict_all[enz] = enz_dict
-
             enz_df_full = pd.concat([enz_df_full, enz_df])
 
     enz_df_full = enz_df_full.set_index('enzyme')
-
-
 
     return enz_df_full
 
