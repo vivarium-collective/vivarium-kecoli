@@ -304,6 +304,6 @@ smart_table_dict = {
 url_st = 'https://websvc.biocyc.org/st-create?format=json&orgid=ECOLI&class=Compounds'
 
 #%%
-rst = s.put(url=url_st,data=smart_table_dict)
+rst = s.put(url=url_st,data=json.dumps(smart_table_dict))
 
 #%%
