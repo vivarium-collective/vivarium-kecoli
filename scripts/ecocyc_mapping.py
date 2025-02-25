@@ -319,7 +319,7 @@ st_retrieval_id = str(smart_table_id['id'])
 
 url_st_retrieval = f'https://websvc.biocyc.org/st-get?id={st_retrieval_id}&format=json'
 
-rst01 = s.get(url=url_st_retrieval)
+rst01 = s.get(url=url_st_retrieval) # success
 
 #%%
 
@@ -337,4 +337,19 @@ sid_chrome = 'biocyc17-3943991625'
 rst02 = s.get(url_st_retrieval+("&sid=")+str(sid_chrome))
 
 
+#%% biovelo test
+
+url_test = "https://websvc.biocyc.org/xmlquery?query=%5bx%3ax%3c-ecoli%5e%5egenes%2cx%5ename%253D%22trpA%22%5d&detail=full"
+
+r_biovelo = s.get(url_test)
+
+import xml.etree.ElementTree as ET
+
+xml_content = r_biovelo.text
+xml_tree = ET.fromstring(xml_content)
+
+for element in xml_tree.findall('.//*'):
+    print(element.text)
 #%%
+
+
