@@ -306,4 +306,35 @@ url_st = 'https://websvc.biocyc.org/st-create?format=json&orgid=ECOLI&class=Comp
 #%%
 rst = s.put(url=url_st,data=json.dumps(smart_table_dict))
 
+smart_table_id = rst.json()
+
+with open (os.path.join(output_mapping,'smart_table_id.json'), 'w') as f:
+    json.dump(smart_table_id,f)
+
+#%% st retrieval test
+
+st_retrieval_id = str(smart_table_id['id'])
+
+# url_st_retrieval = f'https://websvc.biocyc.org/st-service-get?id={st_retrieval_id}&format=json'
+
+url_st_retrieval = f'https://websvc.biocyc.org/st-get?id={st_retrieval_id}&format=json'
+
+rst01 = s.get(url=url_st_retrieval)
+
+#%%
+
+url_example = "https://websvc.biocyc.org/st-get?id=biocyc14-15682-3673724563&format=json&sid=biocyc17-3943991625"
+
+rst03 = s.get(url_example) # status code 200
+print(rst03.json())
+
+
+#%%
+
+sid2 = 'biocyc14-3948971799'
+sid_chrome = 'biocyc17-3943991625'
+
+rst02 = s.get(url_st_retrieval+("&sid=")+str(sid_chrome))
+
+
 #%%
