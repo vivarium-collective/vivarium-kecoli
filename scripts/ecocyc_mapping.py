@@ -350,6 +350,25 @@ xml_tree = ET.fromstring(xml_content)
 
 for element in xml_tree.findall('.//*'):
     print(element.text)
+
+#%% biovelo url encoding:
+
+biovelo_query = "%28%5B%28Reaction%2C%20EC_Number%29%3Af%3C-ECOLI%5E%5EReactions%2C%20%21%28classp%20f%29%2C%20EC_Number%20%3A%3D%20f%5EEC-NUMBER%2C%20Reaction%20%3A%3D%20f%5E%3FNAME%2C%20%2C%20%5Bc%3Ac%3C-f%5ESUBSTRATES%2C%20%28c%20isa%20D-glucopyranose-6-phosphate%20%7C%20c%3DECOLI%7ED-glucopyranose-6-phosphate%29%5D%2C%20%5Bc%3Ac%3C-f%5ESUBSTRATES%2C%20c%3DECOLI%7EFRUCTOSE-6P%5D%2C%20%28opp-side-substrates%3F%20%28f%2C%20ECOLI%7ED-glucopyranose-6-phosphate%2C%20ECOLI%7EFRUCTOSE-6P%29%29%5D%2C%201%29"
+
+url_test = "https://websvc.biocyc.org/xmlquery?"+biovelo_query
+
+r_biovelo2 = s.get(url_test)
+
+
+
+#%% pathway tools test
+url_test = "https://websvc.biocyc.org/apixml?fn=genes-regulated-by-gene&id=ECOLI:EG10164&detail=none"
+
+r_ptools = s.get(url_test)
+
+
+
+
 #%%
 
 

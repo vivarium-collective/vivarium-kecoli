@@ -2,3 +2,4 @@
 .idea/
 credentials/biocyc_credentials.json
 output/
+test_input/
