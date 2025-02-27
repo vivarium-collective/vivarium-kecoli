@@ -404,3 +404,19 @@ print(r_biovelo.text)
 
 #%%
 
+
+xml_content = r_biovelo.text
+xml_tree = ET.fromstring(xml_content)
+
+for element in xml_tree.findall('Reaction'):
+    ID = element.get("ID")
+    text_content = element.text
+    print(f"Tag: {element.tag}, Attribute: {ID}, Text: {text_content}")
+
+#%% extract enzyme id
+
+enz01 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein')
+enz02 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein')
+
+
+#%%
