@@ -375,7 +375,7 @@ r_ptools = s.get(url_test)
 
 url_biovelo_query = "https://websvc.biocyc.org/xmlquery?query="
 
-test_input_idx = 23
+test_input_idx = 24
 
 biovelo_input = open(os.path.join(wd,f"test_input",f"biovelo_{str(test_input_idx)}.txt"),'r').read().replace("\n","")
 
