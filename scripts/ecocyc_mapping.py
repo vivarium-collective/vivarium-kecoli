@@ -7,6 +7,7 @@ import libsbml
 import json
 import time
 from basico import *
+import urllib.parse
 import pickle
 
 from fontTools.afmLib import readlines
@@ -387,3 +388,19 @@ print(r_biovelo.text)
 
 
 #%%
+test_input_idx = 25
+
+biovelo_input = open(os.path.join(wd,f"test_input",f"biovelo_{str(test_input_idx)}.txt"),'r').read().replace("\n","")
+
+query_encoded = urllib.parse.quote(biovelo_input)
+
+r_biovelo = s.get(url_biovelo_query+str(query_encoded))
+
+print(r_biovelo.status_code)
+
+#%%
+print(r_biovelo.text)
+
+
+#%%
+
