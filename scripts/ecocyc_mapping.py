@@ -484,8 +484,8 @@ enz_df_full = enz_mapping_biocyc('k-ecoli74',wd,kecoli74_metabolites_biocyc)
 
 #%% test loop
 
-enz = 'R28_ENZ'
-
+# enz = 'R28_ENZ'
+enz = 'R2x_ENZ'
 substrates = enz_df_full.loc[enz,'substrates_biocyc']
 products = enz_df_full.loc[enz,'products_biocyc']
 
@@ -499,14 +499,22 @@ expr_sides_enz = expr_sides(substrates,products,'ECOLI')
 
 expr_rxns_enz = expr_rxns(expr_subs_enz,expr_sides_enz,'ECOLI')
 
+#%%
+query_encoded = urllib.parse.quote(expr_rxns_enz)
+
+r_biovelo = s.get(url_biovelo_query+str(query_encoded))
+
+print(r_biovelo.status_code)
 
 #%%
-enz = 'R1_ENZ'
+print(r_biovelo.text)
+xml_content = r_biovelo.text
+xml_tree = ET.fromstring(xml_content)
 
-substrates = enz_df_full.loc[enz,'substrates_biocyc']
-products = enz_df_full.loc[enz,'products_biocyc']
-
-expr_sides_test = expr_sides(substrates,products,'ECOLI')
+for element in xml_tree.findall('Reaction'):
+    ID = element.get("ID")
+    text_content = element.text
+    print(f"Tag: {element.tag}, Attribute: {ID}, Text: {text_content}")
 
 
 
