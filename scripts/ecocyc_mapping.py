@@ -416,66 +416,14 @@ for element in xml_tree.findall('Reaction'):
 enz01 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein').get('frameid')
 enz02 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[1].find('enzyme').find('Protein').get('frameid')
 
+
+
 #%%
-
-def expr_subs(compound_id,db_name):
-    expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
-    return expr_subs
-
-def expr_subs_full(substrates_list,db_name):
-    expr_subs_list = [expr_subs(subs, db_name) for subs in substrates_list]
-
-    expr_subs_full = ",".join(expr_subs_list)
-    return expr_subs_full
-
-def expr_sides_same(compound_id,subs0,db_name):
-    expr_sides_same = f"(same-side-substrates? (f,{db_name}~{subs0},{db_name}~{compound_id}))"
-    return expr_sides_same
-
-def expr_sides_opp(compound_id,subs0,db_name):
-    expr_sides_opp = f"(opp-side-substrates? (f,{db_name}~{subs0},{db_name}~{compound_id}))"
-    return expr_sides_opp
-
-def expr_sides(substrates,products,db_name):
-
-    expr_sides_same_full = ""
-    expr_sides_opp_full = ""
-
-    if len(substrates[1:]) > 0:
-        expr_sides_same_list = [expr_sides_same(subs, substrates[0], db_name) for subs in substrates[1:]]
-        expr_sides_same_full = ",".join(expr_sides_same_list)
-
-    if len(products) > 0:
-        expr_sides_opp_list = [expr_sides_opp(prod, substrates[0], db_name) for prod in products]
-        expr_sides_opp_full = ",".join(expr_sides_opp_list)
-
-    if len(expr_sides_same_full)>0:
-        expr_sides_full = expr_sides_same_full + ',' + expr_sides_opp_full
-    else:
-        expr_sides_full = expr_sides_opp_full
-
-    return expr_sides_full
-
-def expr_rxns(expr_subs,expr_sides,db_name):
-
-    expr_rxns_full = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, {expr_subs}, {expr_sides}]"
-
-    return expr_rxns_full
+from utils.biovelo import *
 
 
 #%%
 db_name = "ECOLI"
-# expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
-
-expr_rxns = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, insert_expr_subs, insert_expr_sides]"
-
-expr_sides_same = f"(same-side-substrates? (f,insert_compounds))"
-
-expr_sides_opp = f"(opp-side-substrates? (f,insert_compounds))"
-
-rxn_query_sub = "[rxn:f<-ECOLI^^reactions, rxn := f^FRAME-ID, [c:c<-f^substrates, c=ECOLI~CPD-2961]]"
-rxn_query_sub_prod = "[rxn:f<-ECOLI^^Reactions, rxn := f^FRAME-ID, , [c:c<-f^SUBSTRATES, c=ECOLI~FRUCTOSE-6P], [c:c<-f^SUBSTRATES, c=ECOLI~FRUCTOSE-16-DIPHOSPHATE], (opp-side-substrates? (f, ECOLI~FRUCTOSE-6P, ECOLI~FRUCTOSE-16-DIPHOSPHATE))]"
-
 
 
 #%%
