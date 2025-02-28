@@ -422,6 +422,12 @@ def expr_subs(compound_id,db_name):
     expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
     return expr_subs
 
+def expr_subs_full(substrates_list,db_name):
+    expr_subs_list = [expr_subs(subs, db_name) for subs in substrates_list]
+
+    expr_subs_full = ",".join(expr_subs_list)
+    return expr_subs_full
+
 def expr_sides_same(compound_id,subs0,db_name):
     expr_sides_same = f"(same-side-substrates? (f,{db_name}~{subs0},{db_name}~{compound_id}))"
     return expr_sides_same
@@ -478,21 +484,16 @@ enz = 'R28_ENZ'
 substrates = enz_df_full.loc[enz,'substrates_biocyc']
 products = enz_df_full.loc[enz,'products_biocyc']
 
-expr_subs_list = [expr_subs(subs,'ECOLI') for subs in substrates+products]
+# expr_subs_list = [expr_subs(subs,'ECOLI') for subs in substrates+products]
+#
+# expr_subs_full = ",".join(expr_subs_list)
 
-expr_subs_full = ",".join(expr_subs_list)
+expr_subs_full = expr_subs_full(substrates+products,'ECOLI')
 
-
-if len(substrates[1:])>0:
-    expr_sides_same_list = [expr_sides_same(subs,substrates[0],'ECOLI') for subs in substrates[1:]]
-    expr_sides_same_full = ",".join(expr_sides_same_list)
-
-if len(products)>0:
-    expr_sides_opp_list = [expr_sides_opp(prod,substrates[0],'ECOLI') for prod in products]
-    expr_sides_opp_full = ",".join(expr_sides_opp_list)
+expr_sides_full = expr_sides(substrates,products,'ECOLI')
 
 #%%
-enz = 'R46_ENZ'
+enz = 'R1_ENZ'
 
 substrates = enz_df_full.loc[enz,'substrates_biocyc']
 products = enz_df_full.loc[enz,'products_biocyc']
