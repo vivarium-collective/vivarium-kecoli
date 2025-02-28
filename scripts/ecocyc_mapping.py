@@ -388,7 +388,7 @@ print(r_biovelo.text)
 
 
 #%%
-test_input_idx = 25
+test_input_idx = 26
 
 biovelo_input = open(os.path.join(wd,f"test_input",f"biovelo_{str(test_input_idx)}.txt"),'r').read().replace("\n","")
 
@@ -415,8 +415,29 @@ for element in xml_tree.findall('Reaction'):
 
 #%% extract enzyme id
 
-enz01 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein')
-enz02 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein')
+enz01 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein').get('frameid')
+enz02 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[1].find('enzyme').find('Protein').get('frameid')
+
+
+#%%
+for enz in enz_df_full.index:
+    substrates = enz_df_full.loc[enz,'substrates_biocyc']
+    products = enz_df_full.loc[enz,'products_biocyc']
+
+
+#%%
+db_name = "ECOLI"
+expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
+
+expr_rxns = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, expr_subs, expr_sides"
+
+expr_sides_same = f""
+
+expr_sides_off = f""
+
+rxn_query_sub = "[rxn:f<-ECOLI^^reactions, rxn := f^FRAME-ID, [c:c<-f^substrates, c=ECOLI~CPD-2961]]"
+rxn_query_sub_prod = "[rxn:f<-ECOLI^^Reactions, rxn := f^FRAME-ID, , [c:c<-f^SUBSTRATES, c=ECOLI~FRUCTOSE-6P], [c:c<-f^SUBSTRATES, c=ECOLI~FRUCTOSE-16-DIPHOSPHATE], (opp-side-substrates? (f, ECOLI~FRUCTOSE-6P, ECOLI~FRUCTOSE-16-DIPHOSPHATE))]"
+
 
 
 #%%
