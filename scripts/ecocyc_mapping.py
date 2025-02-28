@@ -10,10 +10,6 @@ from basico import *
 import urllib.parse
 import pickle
 
-from fontTools.afmLib import readlines
-
-from scripts.ecocyc_mapping_kecoli307 import products_rxn
-
 #%%
 
 model_name = "k-ecoli74"
@@ -41,7 +37,9 @@ from utils.mapping import (biocyc_credentials,
                            query_bigg2biocyc,
                            update_results_dict,
                            rxn_mapping_sbml,
-                           enz_mapping_ketchup)
+                           enz_mapping_ketchup,
+                           retrieve_cat_rxns,
+                           enz_mapping_biocyc)
 
 s = biocyc_credentials(dir_credentials)
 
@@ -418,25 +416,48 @@ for element in xml_tree.findall('Reaction'):
 enz01 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[0].find('enzyme').find('Protein').get('frameid')
 enz02 = xml_tree.findall('Reaction')[0].find('enzymatic-reaction').findall('Enzymatic-Reaction')[1].find('enzyme').find('Protein').get('frameid')
 
-
 #%%
-for enz in enz_df_full.index:
-    substrates = enz_df_full.loc[enz,'substrates_biocyc']
-    products = enz_df_full.loc[enz,'products_biocyc']
+
+def expr_subs(compound_id,db_name):
+    expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
+    return expr_subs
+
+def expr_sides_same(compound_id):
+    expr_sides_same = f"(same-side-substrates? (f,{compound_id}))"
+    return expr_sides_same
+
+def expr_sides_opp(compound_id):
+    expr_sides_opp = f"(opp-side-substrates? (f,{compound_id}))"
+    return expr_sides_opp
+
 
 
 #%%
 db_name = "ECOLI"
-expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
+# expr_subs = f"[c:c<-f^substrates, c={db_name}~{compound_id}]"
 
-expr_rxns = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, expr_subs, expr_sides"
+expr_rxns = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, insert_expr_subs, insert_expr_sides]"
 
-expr_sides_same = f""
+expr_sides_same = f"(same-side-substrates? (f,insert_compounds))"
 
-expr_sides_off = f""
+expr_sides_opp = f"(opp-side-substrates? (f,insert_compounds))"
 
 rxn_query_sub = "[rxn:f<-ECOLI^^reactions, rxn := f^FRAME-ID, [c:c<-f^substrates, c=ECOLI~CPD-2961]]"
 rxn_query_sub_prod = "[rxn:f<-ECOLI^^Reactions, rxn := f^FRAME-ID, , [c:c<-f^SUBSTRATES, c=ECOLI~FRUCTOSE-6P], [c:c<-f^SUBSTRATES, c=ECOLI~FRUCTOSE-16-DIPHOSPHATE], (opp-side-substrates? (f, ECOLI~FRUCTOSE-6P, ECOLI~FRUCTOSE-16-DIPHOSPHATE))]"
+
+
+
+#%%
+# from utils.mapping import enz_mapping_biocyc
+enz_df_full = enz_mapping_biocyc('k-ecoli74',wd,kecoli74_metabolites_biocyc)
+
+#%% test loop
+
+enz = 'R28_ENZ'
+
+substrates = enz_df_full.loc[enz,'substrates_biocyc']
+products = enz_df_full.loc[enz,'products_biocyc']
+
 
 
 
