@@ -36,8 +36,11 @@ def expr_sides(substrates,products,db_name):
 
     return expr_sides_full
 
-def expr_rxns(expr_subs,expr_sides,db_name):
+def expr_rxns(substrates,products,db_name):
 
-    expr_rxns_full = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, {expr_subs}, {expr_sides}]"
+    expr_subs = expr_subs_full(substrates+products,db_name)
+    expr_sides_rxn = expr_sides(substrates,products,db_name)
+
+    expr_rxns_full = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, {expr_subs}, {expr_sides_rxn}]"
 
     return expr_rxns_full

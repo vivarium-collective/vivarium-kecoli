@@ -436,16 +436,17 @@ enz_df_full = enz_mapping_biocyc('k-ecoli74',wd,kecoli74_metabolites_biocyc)
 enz = 'R2x_ENZ'
 substrates = enz_df_full.loc[enz,'substrates_biocyc']
 products = enz_df_full.loc[enz,'products_biocyc']
+expr_rxns_enz = expr_rxns(substrates,products,db_name='ECOLI')
 
 # expr_subs_list = [expr_subs(subs,'ECOLI') for subs in substrates+products]
 #
 # expr_subs_full = ",".join(expr_subs_list)
 
-expr_subs_enz = expr_subs_full(substrates+products,'ECOLI')
-
-expr_sides_enz = expr_sides(substrates,products,'ECOLI')
-
-expr_rxns_enz = expr_rxns(expr_subs_enz,expr_sides_enz,'ECOLI')
+# expr_subs_enz = expr_subs_full(substrates+products,'ECOLI')
+#
+# expr_sides_enz = expr_sides(substrates,products,'ECOLI')
+#
+# expr_rxns_enz = expr_rxns(expr_subs_enz,expr_sides_enz,'ECOLI')
 
 #%%
 query_encoded = urllib.parse.quote(expr_rxns_enz)
