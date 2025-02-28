@@ -456,6 +456,11 @@ def expr_sides(substrates,products,db_name):
 
     return expr_sides_full
 
+def expr_rxns(expr_subs,expr_sides,db_name):
+
+    expr_rxns_full = f"[rxn:f<-{db_name}^^reactions, rxn := f^FRAME-ID, {expr_subs}, {expr_sides}]"
+
+    return expr_rxns_full
 
 
 #%%
@@ -488,9 +493,12 @@ products = enz_df_full.loc[enz,'products_biocyc']
 #
 # expr_subs_full = ",".join(expr_subs_list)
 
-expr_subs_full = expr_subs_full(substrates+products,'ECOLI')
+expr_subs_enz = expr_subs_full(substrates+products,'ECOLI')
 
-expr_sides_full = expr_sides(substrates,products,'ECOLI')
+expr_sides_enz = expr_sides(substrates,products,'ECOLI')
+
+expr_rxns_enz = expr_rxns(expr_subs_enz,expr_sides_enz,'ECOLI')
+
 
 #%%
 enz = 'R1_ENZ'
