@@ -37,6 +37,15 @@ def expr_sides(substrates,products,db_name):
     return expr_sides_full
 
 def expr_rxns(substrates,products,db_name='ECOLI'):
+    """
+
+    :param substrates: list of substrates, must be BioCyc object IDs
+    :param products: list of products, must be BioCyc object IDs
+    :param db_name: name of the pathway tools database
+    :return: biovelo expression that may return a list of reactions within an XML body
+    """
+
+
 
     expr_subs = expr_subs_full(substrates+products,db_name)
     expr_sides_rxn = expr_sides(substrates,products,db_name)
