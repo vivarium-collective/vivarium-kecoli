@@ -17,7 +17,7 @@ class KecoliCell(Process):
         super().__init__(parameters)
 
         self.copasi_model_object = load_model(self.parameters['model_file'])
-        self.all_species = get_species(model=self.copasi_model_object.index.tolist())
+        self.all_species = get_species(model=self.copasi_model_object).index.tolist()
 
     def ports_schema(self):
 
@@ -66,7 +66,9 @@ def test_vkecoli():
 
     sim = Engine(
         processes={'kecoli': kecoli_process},
-        topology={'kecoli': {'port_id': (port_id,) for port_id in kecoli_ports.keys()}}
+        topology={'kecoli': {
+            'species': ('species_store',)
+        }}
     )
 
     sim.update(total_time)
