@@ -49,4 +49,42 @@ class KecoliCell(Process):
 
         return species
 
+#%%
+def test_vkecoli():
+
+    wd = os.getcwd()
+    model_path = DEFAULT_MODEL_FILE
+
+    total_time = 300
+
+    config = {
+        'model_file': model_path
+    }
+
+    kecoli_process = KecoliCell(parameters=config)
+    kecoli_ports = kecoli_process.ports_schema()
+
+    sim = Engine(
+        processes={'kecoli': kecoli_process},
+        topology={'kecoli': {'port_id': (port_id,) for port_id in kecoli_ports.keys()}}
+    )
+
+    sim.update(total_time)
+
+    data = sim.emitter.get_timeseries()
+
+
+#%%
+
+if __name__ == '__main__':
+    test_vkecoli()
+
+#%%
+
+
+
+
+
+
+
 
