@@ -19,4 +19,9 @@ class KecoliCell(Process):
         self.copasi_model_object = load_model(self.parameters['model_file'])
         all_species = get_species(model=self.copasi_model_object.index.tolist())
 
+    def ports_schema(self):
+        return{
+            'species': {mol_id: {} for mol_id in self.all_species}
+        }
+
     
