@@ -20,9 +20,16 @@ class KecoliCell(Process):
         all_species = get_species(model=self.copasi_model_object.index.tolist())
 
     def ports_schema(self):
-        return{
-            'species': {mol_id: {} for mol_id in self.all_species}
+
+        ports = {
+            'species': {mol_id: {
+                '_default': 0.0,
+                '_updater': 'accumulate',
+                '_emit': True,
+            } for mol_id in self.all_species}
         }
+
+        return ports
 
     def next_update(self, endtime, states):
 
