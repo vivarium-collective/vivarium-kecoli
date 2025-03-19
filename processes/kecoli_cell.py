@@ -17,7 +17,7 @@ class KecoliCell(Process):
         super().__init__(parameters)
 
         self.copasi_model_object = load_model(self.parameters['model_file'])
-        all_species = get_species(model=self.copasi_model_object.index.tolist())
+        self.all_species = get_species(model=self.copasi_model_object.index.tolist())
 
     def ports_schema(self):
 
@@ -40,8 +40,13 @@ class KecoliCell(Process):
 
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
-        results = {}
+        state_final = timecourse.iloc[-1,:]
 
-        return results
+        species = {}
+
+        for mol_id in state_final.index:
+            species[mol_id] = state_final[mol_id]
+
+        return species
 
 
