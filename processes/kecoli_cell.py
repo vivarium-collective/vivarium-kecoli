@@ -24,4 +24,17 @@ class KecoliCell(Process):
             'species': {mol_id: {} for mol_id in self.all_species}
         }
 
-    
+    def next_update(self, endtime, states):
+
+        species_levels = states['species']
+
+        for mol_id, value in species_levels.items():
+            set_species(name=mol_id, initial_concentration=value, model=self.copasi_model_object)
+
+        timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
+
+        results = {}
+
+        return results
+
+
