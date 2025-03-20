@@ -11,6 +11,8 @@ class KecoliCell(Process):
     defaults = {
         'model_file': DEFAULT_MODEL_FILE,
         'time_step': 1.0,
+        'env_perturb': "Gluc_e",
+        'env_conc': 1.0,
     }
 
     def __init__(self, parameters=None):
@@ -18,15 +20,19 @@ class KecoliCell(Process):
 
         self.copasi_model_object = load_model(self.parameters['model_file'])
         self.all_species = get_species(model=self.copasi_model_object).index.tolist()
+        self.ic_default = get_species(model=self.copasi_model_object)["initial_concentration"].values
+        self.ic_default[self.all_species.index(self.parameters['env_perturb'])] = float(self.parameters['env_conc'])
+
+
 
     def ports_schema(self):
 
         ports = {
-            'species': {mol_id: {
-                '_default': 0.0,
-                '_updater': 'accumulate',
+            'species': {self.all_species[mol_id_idx]: {
+                '_default': self.ic_default[mol_id_idx],
+                '_updater': 'set',
                 '_emit': True,
-            } for mol_id in self.all_species}
+            } for mol_id_idx in range(len(self.all_species))}
         }
 
         return ports
@@ -55,7 +61,7 @@ def test_vkecoli():
     wd = os.getcwd()
     model_path = DEFAULT_MODEL_FILE
 
-    total_time = 300
+    total_time = 10
 
     config = {
         'model_file': model_path
