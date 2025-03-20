@@ -28,11 +28,17 @@ class KecoliCell(Process):
     def ports_schema(self):
 
         ports = {
-            'species': {self.all_species[mol_id_idx]: {
-                '_default': self.ic_default[mol_id_idx],
+            # 'species': {self.all_species[mol_id_idx]: {
+            #     '_default': self.ic_default[mol_id_idx],
+            #     '_updater': 'set',
+            #     '_emit': True,
+            # } for mol_id_idx in range(len(self.all_species))}
+            'species': {
+                '_default':[ (self.all_species[mol_id_idx],self.ic_default[mol_id_idx])for mol_id_idx in range(len(self.all_species))],
                 '_updater': 'set',
-                '_emit': True,
-            } for mol_id_idx in range(len(self.all_species))}
+                '_emit': True
+
+            }
         }
 
         return ports
@@ -41,21 +47,20 @@ class KecoliCell(Process):
 
         species_levels = states['species']
 
-        for mol_id, value in species_levels.items():
+        for mol_id, value in species_levels:
             set_species(name=mol_id, initial_concentration=value, model=self.copasi_model_object)
 
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
         state_final = timecourse.iloc[-1,:]
 
-        species = {}
 
-        for mol_id in state_final.index:
-            species[mol_id] = state_final[mol_id]
 
-        return species
+        species_update=[(self.all_species[mol_id_idx],state_final[mol_id_idx]) for mol_id_idx in range(len(self.all_species))]
 
-#%%
+        return {'species':species_update}
+
+#%
 def test_vkecoli():
 
     wd = os.getcwd()
@@ -74,7 +79,7 @@ def test_vkecoli():
         processes={'kecoli': kecoli_process},
         topology={'kecoli': {
             'species': ('species_store',)
-        }}
+        }} #TODO: pass initial state
     )
 
     sim.update(total_time)
@@ -90,7 +95,31 @@ if __name__ == '__main__':
 #%%
 
 
+wd = os.getcwd()
+model_path = DEFAULT_MODEL_FILE
 
+total_time = 1
+
+config = {
+    'model_file': model_path
+}
+
+kecoli_process = KecoliCell(parameters=config)
+kecoli_ports = kecoli_process.ports_schema()
+
+sim = Engine(
+    processes={'kecoli': kecoli_process},
+    topology={'kecoli': {
+        'species': ('species_store',)
+    }}
+)
+
+#%%
+sim.update(total_time)
+#%%
+data = sim.emitter.get_timeseries()
+
+#%%
 
 
 
