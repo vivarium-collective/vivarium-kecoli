@@ -1,6 +1,7 @@
 from vivarium.core.process import Process
 from vivarium.core.engine import Engine, pp
 from basico import *
+from utils.basico_helper import _set_initial_concentrations, _get_transient_concentration
 
 import os
 
@@ -47,18 +48,22 @@ class KecoliCell(Process):
 
         species_levels = states['species']
 
-        for mol_id, value in species_levels:
-            set_species(name=mol_id, initial_concentration=value, model=self.copasi_model_object)
+        # for mol_id, value in species_levels:
+        #     set_species(name=mol_id, initial_concentration=value, model=self.copasi_model_object)
+
+
+        _set_initial_concentrations(species_levels,self.copasi_model_object)
+
 
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
-        state_final = timecourse.iloc[-1,:]
+        # state_final = timecourse.iloc[-1,:]
 
+        results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
 
+        # species_update=[(self.all_species[mol_id_idx],state_final[mol_id_idx]) for mol_id_idx in range(len(self.all_species))]
 
-        species_update=[(self.all_species[mol_id_idx],state_final[mol_id_idx]) for mol_id_idx in range(len(self.all_species))]
-
-        return {'species':species_update}
+        return {'species':results}
 
 #%
 def test_vkecoli():
@@ -98,7 +103,7 @@ if __name__ == '__main__':
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 1
+total_time = 50
 
 config = {
     'model_file': model_path
