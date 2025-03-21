@@ -32,11 +32,13 @@ class KecoliCell(Process):
         ports = {
 
             'species': {
-                '_default':{ (self.all_species[mol_id_idx],self.ic_default[mol_id_idx])for mol_id_idx in range(len(self.all_species))},
-                '_updater': 'accumulate',
-                '_emit': True
+                self.all_species[mol_id_idx]: {
+                    '_default':self.ic_default[mol_id_idx],
+                    '_updater': 'accumulate',
+                    '_emit': True
 
-            }
+                } for mol_id_idx in range(len(self.all_species))
+        }
         }
 
         return ports
@@ -45,9 +47,7 @@ class KecoliCell(Process):
 
         species_levels = states['species']
 
-
-
-        _set_initial_concentrations(species_levels,self.copasi_model_object)
+        _set_initial_concentrations(species_levels.items(),self.copasi_model_object)
 
 
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
@@ -56,12 +56,12 @@ class KecoliCell(Process):
         # results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
 
         results = []
-        for mol_id,value in species_levels:
+        for mol_id,value in species_levels.items():
             value_new = _get_transient_concentration(name=mol_id,dm=self.copasi_model_object)
             del_value = value_new - value
             result_sp = (mol_id,del_value)
             results.append(result_sp)
-        results = set(results)
+        results = dict(results)
 
         return {'species':results}
 
@@ -123,13 +123,13 @@ sim = Engine(
 sim.update(total_time)
 #%%
 data = sim.emitter.get_timeseries()
-
-data_rearranged = {}
-for timepoint in data['species_store']:
-    for mol_id,value in timepoint:
-        if mol_id not in data_rearranged:
-            data_rearranged[mol_id] = []
-        data_rearranged[mol_id].append(value)
+#%%
+# data_rearranged = {}
+# for timepoint in data['species_store']:
+#     for mol_id,value in timepoint:
+#         if mol_id not in data_rearranged:
+#             data_rearranged[mol_id] = []
+#         data_rearranged[mol_id].append(value)
 
 
 #%%
@@ -141,7 +141,7 @@ plt.figure()
 
 for sp in sp_plot:
 
-    plt.plot(data['time'],data_rearranged[sp],label=sp)
+    plt.plot(data['time'],data['species_store'][sp],label=sp)
 
 plt.legend()
 plt.show()

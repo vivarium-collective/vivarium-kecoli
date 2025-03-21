@@ -45,8 +45,6 @@ class KecoliCell(Process):
 
         species_levels = states['species']
 
-
-
         _set_initial_concentrations(species_levels,self.copasi_model_object)
 
 
@@ -54,7 +52,6 @@ class KecoliCell(Process):
 
 
         results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
-
         return {'species':results}
 
 #%
