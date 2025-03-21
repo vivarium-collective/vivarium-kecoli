@@ -2,6 +2,7 @@ from vivarium.core.process import Process
 from vivarium.core.engine import Engine, pp
 from basico import *
 from utils.basico_helper import _set_initial_concentrations, _get_transient_concentration
+import matplotlib.pyplot as plt
 
 import os
 
@@ -29,11 +30,7 @@ class KecoliCell(Process):
     def ports_schema(self):
 
         ports = {
-            # 'species': {self.all_species[mol_id_idx]: {
-            #     '_default': self.ic_default[mol_id_idx],
-            #     '_updater': 'set',
-            #     '_emit': True,
-            # } for mol_id_idx in range(len(self.all_species))}
+
             'species': {
                 '_default':[ (self.all_species[mol_id_idx],self.ic_default[mol_id_idx])for mol_id_idx in range(len(self.all_species))],
                 '_updater': 'set',
@@ -48,8 +45,6 @@ class KecoliCell(Process):
 
         species_levels = states['species']
 
-        # for mol_id, value in species_levels:
-        #     set_species(name=mol_id, initial_concentration=value, model=self.copasi_model_object)
 
 
         _set_initial_concentrations(species_levels,self.copasi_model_object)
@@ -57,11 +52,8 @@ class KecoliCell(Process):
 
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
-        # state_final = timecourse.iloc[-1,:]
 
         results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
-
-        # species_update=[(self.all_species[mol_id_idx],state_final[mol_id_idx]) for mol_id_idx in range(len(self.all_species))]
 
         return {'species':results}
 
@@ -103,7 +95,7 @@ if __name__ == '__main__':
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 50
+total_time = 300
 
 config = {
     'model_file': model_path
@@ -119,7 +111,7 @@ sim = Engine(
     }}
 )
 
-#%%
+
 sim.update(total_time)
 #%%
 data = sim.emitter.get_timeseries()
@@ -130,6 +122,21 @@ for timepoint in data['species_store']:
         if mol_id not in data_rearranged:
             data_rearranged[mol_id] = []
         data_rearranged[mol_id].append(value)
+
+
+#%%
+sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
+
+plt.rcParams['figure.dpi'] = 90
+
+plt.figure()
+
+for sp in sp_plot:
+
+    plt.plot(data['time'],data_rearranged[sp],label=sp)
+
+plt.legend()
+plt.show()
 
 
 #%%
