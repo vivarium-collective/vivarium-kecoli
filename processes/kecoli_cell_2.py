@@ -32,8 +32,8 @@ class KecoliCell(Process):
         ports = {
 
             'species': {
-                '_default':[ (self.all_species[mol_id_idx],self.ic_default[mol_id_idx])for mol_id_idx in range(len(self.all_species))],
-                '_updater': 'set',
+                '_default':{ (self.all_species[mol_id_idx],self.ic_default[mol_id_idx])for mol_id_idx in range(len(self.all_species))},
+                '_updater': 'accumulate',
                 '_emit': True
 
             }
@@ -53,7 +53,15 @@ class KecoliCell(Process):
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
 
-        results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
+        # results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
+
+        results = []
+        for mol_id,value in species_levels:
+            value_new = _get_transient_concentration(name=mol_id,dm=self.copasi_model_object)
+            del_value = value_new - value
+            result_sp = (mol_id,del_value)
+            results.append(result_sp)
+        results = set(results)
 
         return {'species':results}
 
