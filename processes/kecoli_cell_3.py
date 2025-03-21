@@ -52,7 +52,18 @@ class KecoliCell(Process):
 
 
         results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
-        return {'species':results}
+
+        del_value = []
+
+        for idx,(mol_id,value_new) in enumerate(results):
+            value = dict(species_levels).values[idx]
+            del_value.append(value_new - value)
+            # result_sp = (mol_id,del_value)
+            # results.append(result_sp)
+        # results = dict(results)
+        del_value = np.array(del_value)
+
+        return {'species':del_value}
 
 #%
 def test_vkecoli():
