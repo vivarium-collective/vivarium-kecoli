@@ -134,6 +134,7 @@ data = sim.emitter.get_timeseries()
 
 
 #%%
+
 sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
 
 plt.rcParams['figure.dpi'] = 90
@@ -150,7 +151,30 @@ plt.show()
 
 #%%
 
+MILLARD_MODEL_FILE = os.path.join('models','E_coli_Millard2016.xml')
 
+total_time = 300
 
+model_millard = MILLARD_MODEL_FILE
+
+config_millard = {
+    'model_file': model_millard,
+    'env_perturb': "GLCx",
+    'env_conc': 1.0,
+}
+
+millard_process = KecoliCell(parameters=config_millard)
+millard_ports = millard_process.ports_schema()
+
+sim_millard = Engine(
+    processes={'millard': millard_process},
+    topology={'millard': {
+        'species': ('species_store',)
+    }}
+)
+
+sim_millard.update(total_time)
+
+#%%
 
 

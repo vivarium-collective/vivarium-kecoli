@@ -9,7 +9,7 @@ def _set_initial_concentrations(changes,dm):
 
     for name, value in changes:
         species = model.getMetabolite(name)
-        assert(isinstance(species, COPASI.CMetab))
+        # assert(isinstance(species, COPASI.CMetab))
         if species is None:
             print(f"Species {name} not found in model")
             continue
