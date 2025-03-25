@@ -104,7 +104,7 @@ if __name__ == '__main__':
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 300
+total_time = 10
 
 config = {
     'model_file': model_path
@@ -124,6 +124,10 @@ sim = Engine(
 sim.update(total_time)
 #%%
 data = sim.emitter.get_timeseries()
+
+#%%
+data['species_store']
+
 #%%
 # data_rearranged = {}
 # for timepoint in data['species_store']:

@@ -60,19 +60,13 @@ class KecoliCell(Process):
         # return {'species': [(mol_id,conc) for mol_id, conc in zip(self.all_species, self.ic_default) ]}
 
     def ports_schema(self):
-        # schema = {"_default": [], "_emit": emit}
-        # if name == "bulk":
-        #     schema["_updater"] = bulk_numpy_updater
-        #     # Only pull out counts to be serialized (save space and time)
-        #     schema["_serializer"] = get_bulk_counts
-        #     schema["_divider"] = "bulk_binomial"
+
         ports = {
 
             'species': {
                 '_default':[],
                 '_updater': bulk_numpy_updater,
                 '_emit': True,
-                # "_serializer": get_bulk_counts,
                 "_divider": divide_bulk
 
             }
@@ -111,7 +105,7 @@ def test_vkecoli():
     wd = os.getcwd()
     model_path = DEFAULT_MODEL_FILE
 
-    total_time = 10
+    total_time = 300
 
     config = {
         'model_file': model_path
@@ -136,9 +130,9 @@ def test_vkecoli():
 
 
 #%%
-
-if __name__ == '__main__':
-    test_vkecoli()
+#
+# if __name__ == '__main__':
+#     test_vkecoli()
 
 #%%
 
@@ -146,7 +140,7 @@ if __name__ == '__main__':
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 300
+total_time = 10
 
 config = {
     'model_file': model_path
@@ -154,40 +148,26 @@ config = {
 
 kecoli_process = KecoliCell(parameters=config)
 kecoli_ports = kecoli_process.ports_schema()
+kecoli_initial_state = kecoli_process.initial_state()
+kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
+#%%
+# sim = Engine(
+#     processes={'kecoli': kecoli_process},
+#     topology={'kecoli': {
+#         'species': ('species_store',)
+#     }}
+# )
 
 sim = Engine(
     processes={'kecoli': kecoli_process},
     topology={'kecoli': {
         'species': ('species_store',)
-    }}
+    }},
+    initial_state=kecoli_initial_state,
 )
 
 
 sim.update(total_time)
-#%%
-data = sim.emitter.get_timeseries()
-
-data_rearranged = {}
-for timepoint in data['species_store']:
-    for mol_id,value in timepoint:
-        if mol_id not in data_rearranged:
-            data_rearranged[mol_id] = []
-        data_rearranged[mol_id].append(value)
-
-
-#%%
-sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
-
-plt.rcParams['figure.dpi'] = 90
-
-plt.figure()
-
-for sp in sp_plot:
-
-    plt.plot(data['time'],data_rearranged[sp],label=sp)
-
-plt.legend()
-plt.show()
 
 
 #%%
