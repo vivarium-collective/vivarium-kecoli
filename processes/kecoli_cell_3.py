@@ -13,7 +13,7 @@ import os
 DEFAULT_MODEL_FILE = os.path.join('models','k-ecoli74.xml')
 
 custom_dtype = np.dtype([
-    ('id', '<U50'),  # String (Unicode, max 50 characters)
+    ('id', '<U100'),  # String (Unicode, max 50 characters)
     ('count', '<f8'),  # Float (64-bit)
     ('rRNA_submass', '<f8'),  # Float (64-bit)
     ('tRNA_submass', '<f8'),
@@ -134,7 +134,7 @@ def test_vkecoli():
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 10
+total_time = 300
 
 config = {
     'model_file': model_path
@@ -161,7 +161,10 @@ sim.update(total_time)
 
 #%%
 
-#TODO: investigate species: "R46_ENZ+ATP+ATP+ATP+NADPH+NADPH+NADPH+NADPH+AcCoA+","R46_ENZ+ATP+ATP+ATP+NADPH+NADPH+NADPH+NADPH+AcCoA+"
+#TODO: investigate species: "R46_ENZ+ATP+ATP+ATP+NADPH+NADPH+NADPH+NADPH+AcCoA+","R38_ENZ+ATP+ATP+ATP+ATP+ATP+NADPH+CO2+AcCoA+Glu+Gl"
+
+# sp idx 255,256,257,308,309
+
 
 #%%
 
