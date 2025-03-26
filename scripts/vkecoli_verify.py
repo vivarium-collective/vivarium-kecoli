@@ -5,7 +5,6 @@ plt.rcParams['figure.dpi'] = 90
 #%%
 data = sim.emitter.get_timeseries()
 
-# gluc_e_timeseries = [data['species_store'][tp][26][1] for tp in range(11)]
 
 
 

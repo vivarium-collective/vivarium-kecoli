@@ -53,9 +53,6 @@ class KecoliCell(Process):
 
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
-
-        # results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
-
         results = []
         for mol_id,value in species_levels.items():
             value_new = _get_transient_concentration(name=mol_id,dm=self.copasi_model_object)

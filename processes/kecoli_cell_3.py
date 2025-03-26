@@ -57,7 +57,6 @@ class KecoliCell(Process):
 
         return {'species':species_array }
 
-        # return {'species': [(mol_id,conc) for mol_id, conc in zip(self.all_species, self.ic_default) ]}
 
     def ports_schema(self):
 
@@ -84,7 +83,6 @@ class KecoliCell(Process):
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
 
-        # results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
         results = [(mol_id, _get_transient_concentration(name=mol_id, dm=self.copasi_model_object)) for mol_id in self.all_species]
         del_value = []
         species_levels_values = states['species']['count']
@@ -92,10 +90,6 @@ class KecoliCell(Process):
         for idx,(mol_id,value_new) in enumerate(results):
             value = species_levels_values[idx]
             del_value.append((idx,value_new - value))
-            # result_sp = (mol_id,del_value)
-            # results.append(result_sp)
-        # results = dict(results)
-        # del_value = np.array(del_value)
 
         return {'species':del_value}
 
@@ -140,7 +134,7 @@ def test_vkecoli():
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 300
+total_time = 10
 
 config = {
     'model_file': model_path
@@ -164,6 +158,10 @@ sim = Engine(
 
 sim.update(total_time)
 
+
+#%%
+
+#TODO: investigate species: "R46_ENZ+ATP+ATP+ATP+NADPH+NADPH+NADPH+NADPH+AcCoA+","R46_ENZ+ATP+ATP+ATP+NADPH+NADPH+NADPH+NADPH+AcCoA+"
 
 #%%
 
