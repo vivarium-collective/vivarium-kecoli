@@ -128,13 +128,7 @@ data = sim.emitter.get_timeseries()
 #%%
 data['species_store']
 
-#%%
-# data_rearranged = {}
-# for timepoint in data['species_store']:
-#     for mol_id,value in timepoint:
-#         if mol_id not in data_rearranged:
-#             data_rearranged[mol_id] = []
-#         data_rearranged[mol_id].append(value)
+
 
 
 #%%
