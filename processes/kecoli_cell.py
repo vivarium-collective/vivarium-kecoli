@@ -132,36 +132,35 @@ def test_vkecoli():
 
 #%%
 
-
-wd = os.getcwd()
-model_path = DEFAULT_MODEL_FILE
-
-total_time = 300
-
-config = {
-    'model_file': model_path,
-    'env_perturb': ["Gluc_e"],
-    'env_conc': [0.1],
-}
-
-kecoli_process = KecoliCell(parameters=config)
-kecoli_ports = kecoli_process.ports_schema()
-kecoli_initial_state = kecoli_process.initial_state()
-kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
-#%%
-
-
-sim = Engine(
-    processes={'kecoli': kecoli_process},
-    topology={'kecoli': {
-        'species': ('species_store',)
-    }},
-    initial_state=kecoli_initial_state,
-)
-
-
-sim.update(total_time)
-
+#
+# wd = os.getcwd()
+# model_path = DEFAULT_MODEL_FILE
+#
+# total_time = 300
+#
+# config = {
+#     'model_file': model_path,
+#     'env_perturb': ["Gluc_e"],
+#     'env_conc': [0.1],
+# }
+#
+# kecoli_process = KecoliCell(parameters=config)
+# kecoli_ports = kecoli_process.ports_schema()
+# kecoli_initial_state = kecoli_process.initial_state()
+# kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
+#
+#
+# sim = Engine(
+#     processes={'kecoli': kecoli_process},
+#     topology={'kecoli': {
+#         'species': ('species_store',)
+#     }},
+#     initial_state=kecoli_initial_state,
+# )
+#
+#
+# sim.update(total_time)
+#
 
 
 #%%
