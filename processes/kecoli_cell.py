@@ -32,8 +32,8 @@ class KecoliCell(Process):
     defaults = {
         'model_file': DEFAULT_MODEL_FILE,
         'time_step': 1.0,
-        'env_perturb': "Gluc_e",
-        'env_conc': 1.0,
+        'env_perturb': ["Gluc_e"],
+        'env_conc': [1.0],
     }
 
     def __init__(self, parameters=None):
@@ -42,7 +42,9 @@ class KecoliCell(Process):
         self.copasi_model_object = load_model(self.parameters['model_file'])
         self.all_species = get_species(model=self.copasi_model_object).index.tolist()
         self.ic_default = get_species(model=self.copasi_model_object)["initial_concentration"].values
-        self.ic_default[self.all_species.index(self.parameters['env_perturb'])] = float(self.parameters['env_conc'])
+        for sp_idx,sp_name in enumerate(self.parameters['env_perturb']):
+            self.ic_default[self.all_species.index(sp_name)] = self.parameters['env_conc'][sp_idx]
+        # self.ic_default[self.all_species.index(self.parameters['env_perturb'])] = float(self.parameters['env_conc'])
 
     def initial_state(self, config=None):
 
@@ -137,7 +139,9 @@ model_path = DEFAULT_MODEL_FILE
 total_time = 300
 
 config = {
-    'model_file': model_path
+    'model_file': model_path,
+    'env_perturb': ["Gluc_e"],
+    'env_conc': [0.1],
 }
 
 kecoli_process = KecoliCell(parameters=config)
