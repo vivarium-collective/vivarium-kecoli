@@ -44,7 +44,6 @@ class KecoliCell(Process):
         self.ic_default = get_species(model=self.copasi_model_object)["initial_concentration"].values
         for sp_idx,sp_name in enumerate(self.parameters['env_perturb']):
             self.ic_default[self.all_species.index(sp_name)] = self.parameters['env_conc'][sp_idx]
-        # self.ic_default[self.all_species.index(self.parameters['env_perturb'])] = float(self.parameters['env_conc'])
 
     def initial_state(self, config=None):
 
@@ -63,13 +62,11 @@ class KecoliCell(Process):
     def ports_schema(self):
 
         ports = {
-
             'species': {
                 '_default':[],
                 '_updater': bulk_numpy_updater,
                 '_emit': True,
                 "_divider": divide_bulk
-
             }
         }
 
@@ -81,9 +78,7 @@ class KecoliCell(Process):
 
         _set_initial_concentrations(species_levels,self.copasi_model_object)
 
-
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
-
 
         results = [(mol_id, _get_transient_concentration(name=mol_id, dm=self.copasi_model_object)) for mol_id in self.all_species]
         del_value = []
@@ -125,47 +120,8 @@ def test_vkecoli():
     data = sim.emitter.get_timeseries()
 
 
-#%%
-#
-# if __name__ == '__main__':
-#     test_vkecoli()
-
-#%%
 
 #
-# wd = os.getcwd()
-# model_path = DEFAULT_MODEL_FILE
-#
-# total_time = 300
-#
-# config = {
-#     'model_file': model_path,
-#     'env_perturb': ["Gluc_e"],
-#     'env_conc': [0.1],
-# }
-#
-# kecoli_process = KecoliCell(parameters=config)
-# kecoli_ports = kecoli_process.ports_schema()
-# kecoli_initial_state = kecoli_process.initial_state()
-# kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
-#
-#
-# sim = Engine(
-#     processes={'kecoli': kecoli_process},
-#     topology={'kecoli': {
-#         'species': ('species_store',)
-#     }},
-#     initial_state=kecoli_initial_state,
-# )
-#
-#
-# sim.update(total_time)
-#
-
-
-#%%
-
-
-
-
+if __name__ == '__main__':
+    test_vkecoli()
 
