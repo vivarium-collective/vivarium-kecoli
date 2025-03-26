@@ -99,9 +99,35 @@ def perturb_vkecoli(env_sp,process_default=kecoli_process):
 
 #%%
 results_gluc_vkecoli = perturb_vkecoli('Gluc_e')
-
-
-
-
+results_so4_vkecoli = perturb_vkecoli('SO4_e')
+results_nh3_vkecoli = perturb_vkecoli('NH3_e')
+results_o2_vkecoli = perturb_vkecoli('O2_e')
 
 #%%
+
+
+def plot_pathway_validate(results_basico,results_vkecoli,sp_plot,labels,output_validation):
+
+
+    fig, axs = plt.subplots(nrows=1, ncols=len(results), figsize=(12, 4))
+
+    conditions = ['baseline','high','low']
+
+    for ax_idx,con in enumerate(conditions):
+        result = results_basico[con]['result']
+        data_vk = results_vkecoli[con]
+        tp_vk = data_vk['time']
+        for sp in sp_plot:
+            sp_idx = list(result.columns).index(sp)
+            sp_traj_vk = [data_vk['species_store'][tp][sp_idx][1] for tp in range(len(data_vk['species_store']))]
+
+            axs[ax_idx].plot(result.index, result.loc[:, sp].values, label=sp)
+            axs[ax_idx].plot(tp_vk, sp_traj_vk, ls='None', marker = 'x', markevery = 10)
+
+        axs[ax_idx].set_xlabel('Time (s)')
+        axs[ax_idx].set_title(labels[ax_idx])
+    axs[ax_idx].legend(loc='best')
+
+    sp_perturb = results_basico[list(results_basico.keys())[ax_idx]]['sp_perturb'].replace('_e','')
+
+    plt.savefig(os.path.join(output_validation,str(sp_perturb)+'_perturb.png'))
