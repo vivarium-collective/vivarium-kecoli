@@ -106,10 +106,10 @@ results_o2_vkecoli = perturb_vkecoli('O2_e')
 #%%
 
 
-def plot_pathway_validate(results_basico,results_vkecoli,sp_plot,labels,output_validation):
+def plot_pathway_validate(results_basico,results_vkecoli,sp_plot,labels,output_validation=output_validation):
 
 
-    fig, axs = plt.subplots(nrows=1, ncols=len(results), figsize=(12, 4))
+    fig, axs = plt.subplots(nrows=1, ncols=len(results_basico), figsize=(12, 4))
 
     conditions = ['baseline','high','low']
 
@@ -118,7 +118,7 @@ def plot_pathway_validate(results_basico,results_vkecoli,sp_plot,labels,output_v
         data_vk = results_vkecoli[con]
         tp_vk = data_vk['time']
         for sp in sp_plot:
-            sp_idx = list(result.columns).index(sp)
+            sp_idx = kecoli_process.all_species.index(sp)
             sp_traj_vk = [data_vk['species_store'][tp][sp_idx][1] for tp in range(len(data_vk['species_store']))]
 
             axs[ax_idx].plot(result.index, result.loc[:, sp].values, label=sp)
@@ -131,3 +131,10 @@ def plot_pathway_validate(results_basico,results_vkecoli,sp_plot,labels,output_v
     sp_perturb = results_basico[list(results_basico.keys())[ax_idx]]['sp_perturb'].replace('_e','')
 
     plt.savefig(os.path.join(output_validation,str(sp_perturb)+'_perturb.png'))
+
+#%%
+plot_pathway_validate(results_gluc,results_gluc_vkecoli,["Gluc_e"],['Glucose (baseline)','Glucose (high)','Glucose (low)'])
+
+
+
+#%%
