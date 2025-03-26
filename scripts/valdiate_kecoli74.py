@@ -4,18 +4,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from processes.kecoli_cell import KecoliCell
+from vivarium.core.engine import Engine
 
 plt.rcParams['figure.dpi'] = 90
-
+wd = os.getcwd().replace('/scripts','')
 
 #%%
 model_name = "k-ecoli74"
 
-wd = os.getcwd().replace('scripts', '')
-
 model_dir = os.path.join(wd,'models')
 
-model_kecoli74 = load_model(os.path.join(model_dir,model_name+'.xml'))
+model_path = os.path.join(model_dir,model_name+'.xml')
+
+model_kecoli74 = load_model(model_path)
 
 species_kecoli74 = get_species(model=model_kecoli74)
 
@@ -51,3 +53,55 @@ results_nh3 = perturb_env(model_kecoli74,'NH3_e')
 results_o2 = perturb_env(model_kecoli74,'O2_e')
 
 #%% run the same simulations using vkecoli
+
+config_default = {
+    'model_file': model_path,
+    'env_perturb': ["Gluc_e"],
+    'env_conc': [1.0],
+}
+
+kecoli_process = KecoliCell(parameters=config_default)
+kecoli_ports = kecoli_process.ports_schema()
+kecoli_initial_state = kecoli_process.initial_state()
+kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
+
+#%%
+
+def perturb_vkecoli(env_sp,process_default=kecoli_process):
+
+    ic_sp_default = process_default.ic_default[process_default.all_species.index(env_sp)]
+
+    env_all = {'baseline':ic_sp_default,'high':ic_sp_default*10,'low':ic_sp_default/10}
+
+    env_output = {}
+
+    for key,val in env_all.items():
+        config_env = {
+            'model_file': model_path,
+            'env_perturb': [env_sp],
+            'env_conc': [val],
+        }
+        env_process = KecoliCell(parameters=config_env)
+        env_ports = env_process.ports_schema()
+        env_initial_state = env_process.initial_state()
+        env_initial_state['species_store'] = env_initial_state.pop('species')
+
+        env_sim = Engine(
+            processes={'kecoli': env_process},
+            topology={'kecoli': {'species': ('species_store',)}},initial_state=env_initial_state)
+
+        env_sim.update(300)
+        env_data = env_sim.emitter.get_timeseries()
+
+        env_output[key] = env_data
+
+    return env_output
+
+#%%
+results_gluc_vkecoli = perturb_vkecoli('Gluc_e')
+
+
+
+
+
+#%%
