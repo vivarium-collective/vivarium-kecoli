@@ -84,8 +84,8 @@ class KecoliCell(Process):
         timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
 
-        results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
-
+        # results = { (mol_id,_get_transient_concentration(name=mol_id,dm=self.copasi_model_object)) for mol_id in self.all_species}
+        results = [(mol_id, _get_transient_concentration(name=mol_id, dm=self.copasi_model_object)) for mol_id in self.all_species]
         del_value = []
         species_levels_values = states['species']['count']
 
@@ -140,7 +140,7 @@ def test_vkecoli():
 wd = os.getcwd()
 model_path = DEFAULT_MODEL_FILE
 
-total_time = 10
+total_time = 300
 
 config = {
     'model_file': model_path
@@ -151,12 +151,7 @@ kecoli_ports = kecoli_process.ports_schema()
 kecoli_initial_state = kecoli_process.initial_state()
 kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
 #%%
-# sim = Engine(
-#     processes={'kecoli': kecoli_process},
-#     topology={'kecoli': {
-#         'species': ('species_store',)
-#     }}
-# )
+
 
 sim = Engine(
     processes={'kecoli': kecoli_process},
