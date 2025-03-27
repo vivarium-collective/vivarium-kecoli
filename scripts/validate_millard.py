@@ -49,7 +49,9 @@ for sp in sp_plot:
     y_vals = sp_traj/max(sp_traj)
     axs.plot(result.index, y_vals, label=sp)
 axs.legend(bbox_to_anchor=(0.95, 1))
-plt.savefig(os.path.join(output_plots,'timecourse_default.png'))
+
+plt.show()
+# plt.savefig(os.path.join(output_plots,'timecourse_default.png'))
 
 #%%
 
@@ -57,7 +59,7 @@ plt.savefig(os.path.join(output_plots,'timecourse_default.png'))
 config_default = {
     'model_file': model_path,
     'env_perturb': ["GLCx"],
-    'env_conc': [1.0],
+    'env_conc': [ic_default["GLCx"]],
 }
 
 
@@ -68,6 +70,7 @@ kecoli_ports = kecoli_process.ports_schema()
 kecoli_initial_state = kecoli_process.initial_state()
 kecoli_initial_state['species_store'] = kecoli_initial_state.pop('species')
 
+#%%
 sim = Engine(
     processes={'kecoli': kecoli_process},
     topology={'kecoli': {
@@ -79,4 +82,22 @@ sim = Engine(
 total_time = 300
 
 sim.update(total_time)
+#%%
+data_vk = sim.emitter.get_timeseries()
+
+tp_vk = data_vk['time']
+
+plt.figure()
+
+for sp in sp_plot:
+    sp_idx = kecoli_process.all_species.index(sp)
+    sp_traj_vk = [data_vk['species_store'][tp][sp_idx][1] for tp in range(len(data_vk['species_store']))]
+
+    plt.plot(tp_vk, np.array(sp_traj_vk)/max(sp_traj_vk), label=sp)
+
+plt.legend(bbox_to_anchor=(0.95, 1))
+plt.xlabel('Time (s)')
+plt.show()
+
+
 #%%
