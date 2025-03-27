@@ -12,8 +12,10 @@ import os
 
 DEFAULT_MODEL_FILE = os.path.join('models','k-ecoli74.xml')
 
+
+# defining a numpy array with custom data type to emulate vEcoli bulk structure
 custom_dtype = np.dtype([
-    ('id', '<U100'),  # String (Unicode, max 50 characters)
+    ('id', '<U100'),  # String (Unicode, max 100 characters)
     ('count', '<f8'),  # Float (64-bit)
     ('rRNA_submass', '<f8'),  # Float (64-bit)
     ('tRNA_submass', '<f8'),
@@ -26,17 +28,18 @@ custom_dtype = np.dtype([
     ('DNA_submass', '<f8')
 ])
 
+# defining a vivarium process for ecoli kinetic metabolism models
 
 class KecoliCell(Process):
 
     defaults = {
-        'model_file': DEFAULT_MODEL_FILE,
+        'model_file': DEFAULT_MODEL_FILE, # path to the sbml model file
         'time_step': 1.0,
         'env_perturb': ["Gluc_e"],
         'env_conc': [1.0],
     }
 
-    def __init__(self, parameters=None):
+    def __init__(self, parameters=None): #constructor
         super().__init__(parameters)
 
         self.copasi_model_object = load_model(self.parameters['model_file'])
@@ -53,8 +56,8 @@ class KecoliCell(Process):
         species_array = np.zeros(num_species, dtype=custom_dtype)
 
         # Fill in the 'id' and 'count' fields
-        species_array['id'] = self.all_species  # Assign species names
-        species_array['count'] = self.ic_default  # Assign initial counts
+        species_array['id'] = self.all_species  # retrieves species names from sbml
+        species_array['count'] = self.ic_default  # retrieves ic from sbml
 
         return {'species':species_array }
 
@@ -64,9 +67,9 @@ class KecoliCell(Process):
         ports = {
             'species': {
                 '_default':[],
-                '_updater': bulk_numpy_updater,
+                '_updater': bulk_numpy_updater, # modified version of vEcoli bulk updater
                 '_emit': True,
-                "_divider": divide_bulk
+                "_divider": divide_bulk # modified version of vEcoli bulk divider
             }
         }
 
@@ -74,19 +77,19 @@ class KecoliCell(Process):
 
     def next_update(self, endtime, states):
 
-        species_levels = list(zip(states['species']['id'],states['species']['count']))
+        species_levels = list(zip(states['species']['id'],states['species']['count'])) # retrieves current species levels
 
-        _set_initial_concentrations(species_levels,self.copasi_model_object)
+        _set_initial_concentrations(species_levels,self.copasi_model_object) # set species levels as ic
 
-        timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
+        timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object) # run time step simulation
 
-        results = [(mol_id, _get_transient_concentration(name=mol_id, dm=self.copasi_model_object)) for mol_id in self.all_species]
+        results = [(mol_id, _get_transient_concentration(name=mol_id, dm=self.copasi_model_object)) for mol_id in self.all_species] # reorganize results
         del_value = []
         species_levels_values = states['species']['count']
 
         for idx,(mol_id,value_new) in enumerate(results):
             value = species_levels_values[idx]
-            del_value.append((idx,value_new - value))
+            del_value.append((idx,value_new - value)) # get species level changes
 
         return {'species':del_value}
 
@@ -115,9 +118,9 @@ def test_vkecoli():
         initial_state=kecoli_initial_state,
     )
 
-    sim.update(total_time)
+    sim.update(total_time) # run process
 
-    data = sim.emitter.get_timeseries()
+    data = sim.emitter.get_timeseries() # retrive simulation outputs from in memory emitter
 
 
 
