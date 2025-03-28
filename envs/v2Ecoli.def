@@ -53,6 +53,10 @@ From: bitnami/python:{{PY_VER}}-debian-12
     # cleanup
     echo "\n\n\n" && pip cache purge
 
+%test
+
+    v2metab test --time 30
+
 %labels
 
     Author Boyan Beronov

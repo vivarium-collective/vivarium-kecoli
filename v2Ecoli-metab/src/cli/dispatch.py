@@ -10,8 +10,11 @@ from . import validate
 # config
 # ==============================================================================
 
-def find_model(name: str) -> Path:
-  if name != "k-ecoli74.xml":
+def find_model(name: str | None = None) -> Path:
+  default = "k-ecoli74.xml"
+  if name is None or not name:
+    name = default
+  if name != default:
     raise NotImplementedError(f"unknown model: {name}")
   return importlib.resources.files("v2Ecoli.metab.model") / name
 
@@ -20,7 +23,7 @@ def find_model(name: str) -> Path:
 # ==============================================================================
 
 def dispatch(args: Namespace):
-  globals()[f"{args.cmd}"].main(find_model(args.model), args)
+  return globals()[f"{args.cmd}"].main(find_model(args.model), args)
 
 
 def make_parser() -> ArgumentParser:
@@ -46,9 +49,12 @@ def make_parser() -> ArgumentParser:
   for p_cmd in [p_test, p_validate]:
     p_cmd.set_defaults(func=dispatch)
     p_cmd.add_argument(
-      "model", type=str, nargs="?", default="k-ecoli74.xml",
+      "model", type=str, nargs="?", default="",
       metavar="MODEL", help="SBML model (default: k-ecoli74.xml)")
     p_cmd.add_argument(
       "-t", "--time", type=float, default=300.0,
       metavar="T", help="total simulation time (default: 300)")
+  p_cmd.add_argument(
+    "-f", "--factor", type=float, default=2.0,
+    metavar="F", help="multiplicative perturbation (default: 2)")
   return parser

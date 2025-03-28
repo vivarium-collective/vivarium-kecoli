@@ -26,4 +26,3 @@ def main(model: Path, args: Namespace):
     initial_state=kecoli_initial_state,
   )
   sim.update(args.time)
-  data = sim.emitter.get_timeseries()

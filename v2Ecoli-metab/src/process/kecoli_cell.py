@@ -1,8 +1,6 @@
 
 from typing import Optional
 
-import matplotlib.pyplot as plt
-
 from vivarium.core.process import Process
 from vivarium.core.types import State
 from basico import *
@@ -69,8 +67,7 @@ class KecoliCell(Process):
     return ports
 
   def next_update(self, endtime, states):
-    species_levels = list(zip(states['species']['id'],
-                              states['species']['count']))
+    species_levels = states['species'][['id', 'count']]
     _set_initial_concentrations(species_levels,self.copasi_model_object)
     timecourse = run_time_course(
       duration=endtime, intervals=1, update_model=True,
