@@ -192,3 +192,32 @@ def enz_mapping_biocyc(model_name,wd,biocyc_mapping_dict):
     return enz_df_full
 
 #%%
+
+class RxnMapping():
+
+    def __init__(self,model_name,wd):
+        self.model_name = model_name
+        self.wd = wd
+        dir_models = os.path.join(wd,'models')
+        reader = libsbml.SBMLReader()
+
+        self.model = reader.readSBMLFromFile(os.path.join(dir_models, str(model_name)+".xml")).getModel()
+        self.species_all = [sp.getName() for sp in self.model.getListOfSpecies()]
+        self.rxn_all = [rxn.id for rxn in self.model.getListOfReactions()]
+
+        self.rxn_mapping = pd.DataFrame(data=np.zeros((len(self.species_all), len(self.rxn_all))), index=self.species_all, columns=self.rxn_all)
+        for reaction in self.model.getListOfReactions():
+
+            for reactant in reaction.getListOfReactants():
+                species_name = str(self.model.getSpecies(reactant.species).name)
+                self.rxn_mapping.loc[species_name, reaction.id] = -1
+
+            for product in reaction.getListOfProducts():
+                species_name = str(self.model.getSpecies(product.species).name)
+                self.rxn_mapping.loc[species_name, reaction.id] = 1
+
+    def rxn_get_sp(self,rxn_id):
+        return self.rxn_mapping.loc[:, rxn_id]
+
+    def sp_get_rxn(self,sp_id):
+        return self.rxn_mapping.loc[sp_id, :]

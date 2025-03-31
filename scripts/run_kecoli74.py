@@ -66,3 +66,11 @@ plot_aa(results_o2,['O2 (baseline)','O2 (low)','O2 (high)'],output_plots)
 
 #%%
 
+from utils.mapping import rxn_mapping_sbml
+
+#%%
+
+rxn_mapping = rxn_mapping_sbml('k-ecoli74',wd)
+
+#%%
+
