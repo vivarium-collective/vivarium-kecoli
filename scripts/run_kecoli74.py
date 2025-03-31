@@ -21,6 +21,7 @@ species_kecoli74 = get_species(model=model_kecoli74)
 
 rxn_kecoli74 = get_reactions(model=model_kecoli74)
 ic_default = species_kecoli74.initial_concentration
+params_default = get_parameters(model=model_kecoli74).value
 
 output_dir = os.path.join(wd,'output',model_name)
 
@@ -76,3 +77,35 @@ kecoli74_mapping = RxnMapping('k-ecoli74',wd)
 
 #%%
 
+ic_perturb = ['Gluc_e','gluc_up_ENZ+ATP+Gluc_e','gluc_up_ENZ+G6P','up_glc_ENZ+Gluc_e']
+params_perturb = ["K_kf_gluc_up_1", "K_kr_gluc_up_1", "K_kf_up_glc_1", "K_kr_up_glc_1"]
+
+sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
+# sp_plot = ["Gluc_e"]
+
+for sp in ic_perturb:
+    set_species(model=model_kecoli74, name=sp, initial_concentration=0.0)
+
+for param in params_perturb:
+    set_parameters(model=model_kecoli74, name=param,initial_value=0.0)
+
+
+result_default = run_time_course(model=model_kecoli74, duration=300)
+
+plt.figure()
+for sp in sp_plot:
+    plt.plot(result_default.index,result_default.loc[:,sp],label=sp)
+
+plt.legend()
+plt.xlabel('Time (s)')
+plt.show()
+
+
+
+
+#%%
+
+#K_kf_gluc_up_1
+#K_kr_gluc_up_1
+#K_kf_up_glc_1
+#K_kr_up_glc_1
