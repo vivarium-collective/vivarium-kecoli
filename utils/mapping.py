@@ -217,7 +217,13 @@ class RxnMapping():
                 self.rxn_mapping.loc[species_name, reaction.id] = 1
 
     def rxn_get_sp(self,rxn_id):
-        return self.rxn_mapping.loc[:, rxn_id]
+
+        rxn_mapping_idxs = self.rxn_mapping.index[self.rxn_mapping.loc[:, rxn_id]!=0]
+
+        return self.rxn_mapping.loc[rxn_mapping_idxs, rxn_id]
 
     def sp_get_rxn(self,sp_id):
-        return self.rxn_mapping.loc[sp_id, :]
+
+        rxn_mapping_cols = self.rxn_mapping.columns[self.rxn_mapping.loc[sp_id, :]!=0]
+
+        return self.rxn_mapping.loc[sp_id, rxn_mapping_cols]
