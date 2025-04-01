@@ -1,0 +1,62 @@
+Bootstrap: docker
+From: bitnami/python:{{PY_VER}}-debian-12
+
+%help
+
+  Experimental metabolism module for the `v2Ecoli` whole cell model.
+
+  For development, the current source tree can be bound into the container:
+
+    $> apptainer shell --cleanenv --contain \
+           --bind ../..:/vivarium --pwd /vivarium/vivarium-kecoli \
+           --overlay v2Ecoli.img \
+           v2Ecoli.sif
+
+%arguments
+
+    # version config
+    PY_VER=3.13
+
+%files
+
+    # copy source trees
+    ../v2Ecoli-metab /vivarium/vivarium-kecoli/
+
+%environment
+
+    # lib paths
+    export V2M=/vivarium/vivarium-kecoli/v2Ecoli-metab
+
+%post
+
+    # lib paths
+    export V2M=/vivarium/vivarium-kecoli/v2Ecoli-metab
+
+    # common system utils
+    # (`install_packages` wrapper for `apt` is provided by Bitnami base image)
+    install_packages \
+      sudo ca-certificates build-essential wget unzip tar git \
+      tmux time less tree vim nano
+
+    # info
+    echo "\n\n\n" && pip debug
+
+    # main package
+    echo "\n\n\n" && cd ${V2M} && pip install -v -e .
+
+    # Python utils
+    echo "\n\n\n" && pip install ipython jupyter
+
+    # info
+    echo "\n\n\n" && pip list
+
+    # cleanup
+    echo "\n\n\n" && pip cache purge
+
+%test
+
+    v2metab test --time 30
+
+%labels
+
+    Author Boyan Beronov
