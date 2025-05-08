@@ -56,8 +56,7 @@ results_o2 = perturb_env(model_kecoli74,'O2_e')
 
 config_default = {
     'model_file': model_path,
-    'env_perturb': ["Gluc_e"],
-    'env_conc': [1.0],
+    'env_perturb': {"Gluc_e":1.0}
 }
 
 kecoli_process = KecoliCell(parameters=config_default)
@@ -78,8 +77,7 @@ def perturb_vkecoli(env_sp,process_default=kecoli_process):
     for key,val in env_all.items():
         config_env = {
             'model_file': model_path,
-            'env_perturb': [env_sp],
-            'env_conc': [val],
+            'env_perturb': {env_sp:val}
         }
         env_process = KecoliCell(parameters=config_env)
         env_ports = env_process.ports_schema()
@@ -138,5 +136,9 @@ sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
 plot_pathway_validate(results_gluc,results_gluc_vkecoli,sp_plot,['Glucose (baseline)','Glucose (high)','Glucose (low)'])
 
 
+
+#%%
+
+plot_pathway_validate(results_nh3,results_nh3_vkecoli,sp_plot,['NH3 (baseline)','NH3 (high)','NH3 (low)'])
 
 #%%

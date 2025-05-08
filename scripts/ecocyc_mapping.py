@@ -103,7 +103,7 @@ for query in kecoli74_metabolites:
     if query not in kecoli74_metabolites_biocyc.keys():
         query_failed.append(query)
 
-
+#%%
 np.savetxt('mapping_results/query_failed_kecoli74.txt',query_failed,fmt='%s')
 
 #%%
@@ -132,6 +132,27 @@ for idx in range(len(kecoli74_mapping_manual)):
 #%%
 with open(os.path.join(output_mapping,'ecocyc_mapping_kecoli74.json'), 'w') as f:
     json.dump(kecoli74_metabolites_biocyc,f, indent=2)
+
+#%%
+kecoli74_mapping_metabolites = pd.DataFrame(index=kecoli74_metabolites,
+                                            columns=['BioCyc'],
+                                            data = np.ones(len(kecoli74_metabolites))*np.nan)
+
+
+for mtb in kecoli74_metabolites:
+
+    if kecoli74_metabolites_biocyc.get(mtb):
+        kecoli74_mapping_metabolites.loc[mtb,'BioCyc'] = np.array(kecoli74_metabolites_biocyc[mtb]).astype('str')
+
+
+#%%
+
+kecoli74_mapping_metabolites.to_csv(os.path.join('mapping_results','kecoli74_mapping_metabolites.csv'))
+
+
+
+
+
 
 #%% kecoli rxn_mapping
 rxn_mapping = rxn_mapping_sbml(model_name,wd)

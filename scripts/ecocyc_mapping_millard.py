@@ -195,6 +195,8 @@ for query in millard_species:
     if query not in millard_metabolites_biocyc.keys():
         query_failed.append(query)
 
+#%%
+
 np.savetxt(os.path.join(output_mapping,'query_failed_millard.txt'),query_failed,fmt='%s')
 
 
@@ -217,5 +219,22 @@ for idx,name in enumerate(biocyc_names):
 
 with open(os.path.join(output_mapping,'ecocyc_mapping_millard_partial.json'), 'w') as f:
     json.dump(millard_metabolites_biocyc,f, indent=2)
+
+
+
+#%%
+millard_mapping_species = pd.DataFrame(index=millard_species,
+                                            columns=['BioCyc'],
+                                            data = np.ones(len(millard_species))*np.nan)
+
+
+for sp in millard_species:
+
+    if millard_metabolites_biocyc.get(sp):
+        millard_mapping_species.loc[sp,'BioCyc'] = np.array(millard_metabolites_biocyc[sp]).astype('str')
+
+#%%
+
+millard_mapping_species.to_csv(os.path.join('mapping_results','millard_mapping_species.tsv'),index=True,header = True,sep='\t')
 
 #%%

@@ -31,12 +31,15 @@ custom_dtype = np.dtype([
 # defining a vivarium process for ecoli kinetic metabolism models
 
 class KecoliCell(Process):
+    """
+    note: initial env state is by convention
 
+    """
     defaults = {
         'model_file': DEFAULT_MODEL_FILE, # path to the sbml model file
         'time_step': 1.0,
-        'env_perturb': ["Gluc_e"],
-        'env_conc': [1.0],
+        'env_perturb': {}, #TODO: dict, assert env species
+        'params_perturb': {}
     }
 
     def __init__(self, parameters=None): #constructor
@@ -45,8 +48,13 @@ class KecoliCell(Process):
         self.copasi_model_object = load_model(self.parameters['model_file'])
         self.all_species = get_species(model=self.copasi_model_object).index.tolist()
         self.ic_default = get_species(model=self.copasi_model_object)["initial_concentration"].values
-        for sp_idx,sp_name in enumerate(self.parameters['env_perturb']):
-            self.ic_default[self.all_species.index(sp_name)] = self.parameters['env_conc'][sp_idx]
+        if len(self.parameters['env_perturb']) > 0:
+            for (sp_name,sp_conc) in self.parameters['env_perturb'].items():
+                self.ic_default[self.all_species.index(sp_name)] = self.parameters['env_perturb'][sp_name]
+
+        if len(self.parameters['params_perturb']) > 0:
+            for (param,val) in self.parameters['params_perturb'].items():
+                set_parameters(model=self.copasi_model_object, name=param, initial_value=float(val))
 
     def initial_state(self, config=None):
 
@@ -81,10 +89,11 @@ class KecoliCell(Process):
 
         _set_initial_concentrations(species_levels,self.copasi_model_object) # set species levels as ic
 
-        timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object) # run time step simulation
+        # run time step simulation
+        timecourse = run_time_course(duration=endtime, intervals=1, update_model=True, model=self.copasi_model_object)
 
         results = [(mol_id, _get_transient_concentration(name=mol_id, dm=self.copasi_model_object)) for mol_id in self.all_species] # reorganize results
-        del_value = []
+        del_value = [] #TODO: rename to delta
         species_levels_values = states['species']['count']
 
         for idx,(mol_id,value_new) in enumerate(results):

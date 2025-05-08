@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-plt.rcParams['figure.dpi'] = 90
+plt.rcParams['figure.dpi'] = 150
 
 
 #%%
@@ -51,8 +51,9 @@ results_nh3 = perturb_env(model_kecoli74,'NH3_e')
 results_o2 = perturb_env(model_kecoli74,'O2_e')
 
 #%%
-sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
+sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "AKG", "AcCoA", "SucCoA","OAC", "Ac_e", "CO2_e"]
 
+#%%
 plot_pathway(results_gluc,sp_plot,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 plot_aa(results_gluc,['Glucose (baseline)','Glucose (low)','Glucose (high)'],output_plots)
 
@@ -69,6 +70,34 @@ plot_aa(results_o2,['O2 (baseline)','O2 (low)','O2 (high)'],output_plots)
 
 from utils.mapping import rxn_mapping_sbml
 from utils.mapping import RxnMapping
+
+#%%
+
+sp_unique = list(filter(lambda x: '+' not in x, list(species_kecoli74.index)))
+
+complex_mapping = pd.DataFrame(data=np.zeros((len(species_kecoli74.index),len(sp_unique))),index=species_kecoli74.index,columns=sp_unique)
+
+#%%
+
+complex_R56ENZ = list(complex_mapping.index[np.where(complex_mapping.loc[:,'R56_ENZ'])[0]])
+
+
+#%%
+
+for sp in species_kecoli74.index:
+    sp_monomers = sp.split('+')
+    sp_monomers_unique = np.unique(sp_monomers)
+    for sp_monomer in sp_monomers_unique:
+        units = sp_monomers.count(sp_monomer)
+        complex_mapping.loc[sp,sp_monomer] = units
+
+#%%
+
+
+
+
+
+
 #%%
 
 # rxn_mapping = rxn_mapping_sbml('k-ecoli74',wd)
@@ -80,7 +109,7 @@ kecoli74_mapping = RxnMapping('k-ecoli74',wd)
 ic_perturb = ['Gluc_e','gluc_up_ENZ+ATP+Gluc_e','gluc_up_ENZ+G6P','up_glc_ENZ+Gluc_e']
 params_perturb = ["K_kf_gluc_up_1", "K_kr_gluc_up_1", "K_kf_up_glc_1", "K_kr_up_glc_1"]
 
-sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "Ac_e", "CO2_e"]
+sp_plot = ["Gluc_e", "Pyr", "ATP", "NADH", "AKG", "AcCoA", "SucCoA","OAC", "Ac_e", "CO2_e"]
 # sp_plot = ["Gluc_e"]
 
 for sp in ic_perturb:
@@ -109,3 +138,55 @@ plt.show()
 #K_kr_gluc_up_1
 #K_kf_up_glc_1
 #K_kr_up_glc_1
+
+
+#%%
+compare_tp = 100
+
+sp_results = list(results_gluc['baseline']['result'].columns)
+
+sp_compare = [results_gluc['baseline']['result'].iloc[compare_tp,:],results_gluc['high']['result'].iloc[compare_tp,:]]
+
+sp_compare_ratio = pd.Series(data=sp_compare[1].values/sp_compare[0].values,index=sp_results)
+
+#%%
+
+
+R56_abs = pd.DataFrame()
+R56_abs['baseline'] = sp_compare[0][complex_R56ENZ]
+R56_abs['high'] = sp_compare[1][complex_R56ENZ]
+
+#%%
+sp_sum_baseline = []
+sp_sum_high = []
+
+for sp in sp_unique:
+
+    sp_complex_mapping = complex_mapping.loc[:,sp]
+    sp_lvls_baseline = sp_compare[0]*sp_complex_mapping
+    sp_sum_baseline.append(sum(sp_lvls_baseline.values))
+    sp_lvls_high = sp_compare[1]*sp_complex_mapping
+    sp_sum_high.append(sum(sp_lvls_high.values))
+
+#%%
+
+sp_sum_ratio = pd.Series(data = np.array(sp_sum_high)/np.array(sp_sum_baseline), index=sp_unique)
+
+#%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#%%
