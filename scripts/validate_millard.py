@@ -20,10 +20,12 @@ os.makedirs(output_dir, exist_ok=True)
 output_results = os.path.join(output_dir,'results')
 output_plots = os.path.join(output_dir,'plots')
 output_mapping = os.path.join(output_dir,'mapping')
+output_validation = os.path.join(output_dir,'validation')
 
 os.makedirs(output_results, exist_ok=True)
 os.makedirs(output_plots, exist_ok=True)
 os.makedirs(output_mapping, exist_ok=True)
+os.makedirs(output_validation, exist_ok=True)
 
 
 
@@ -37,22 +39,7 @@ ic_default = species_all.initial_concentration
 params_default = get_parameters(model=model_millard).value
 result_default = run_time_course(model=model_millard, duration=300)
 
-#%%
-# sp_plot = ["GLCx","ACEx","G6P","F6P","GAP","PYR","R5P","MAL","AKG","ACCOA"]
-#
-#
-# fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(8, 5))
-#
-#
-# result = result_default
-# for sp in sp_plot:
-#     sp_traj = result.loc[:,sp].values
-#     y_vals = sp_traj/max(sp_traj)
-#     axs.plot(result.index, y_vals, label=sp)
-# axs.legend(bbox_to_anchor=(0.95, 1))
-#
-# plt.show()
-# plt.savefig(os.path.join(output_plots,'timecourse_default.png'))
+
 
 #%% shutoff glucose
 
@@ -75,7 +62,7 @@ set_species(model=model_millard, name='Px',initial_value=ic_default['Px'])
 
 #%%
 # sp_plot = ["GLCx","ACEx","G6P","F6P","GAP","PYR","R5P","MAL","AKG","ACCOA"]
-sp_plot = ["GLCx","PYR","ACCOA","AKG","SUCCOA","OAA"]
+sp_plot = ["GLX","FUM","PYR","ACCOA","AKG","SUCCOA","OAA"]
 results = [result_default, result_noglc, result_nopx]
 titles = ["Default","No glucose","No phosphate"]
 fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(10, 4),layout='tight')
@@ -140,22 +127,6 @@ total_time = 300
 
 sim.update(total_time)
 
-#%%
-data_vk = sim.emitter.get_timeseries()
-
-tp_vk = data_vk['time']
-
-plt.figure()
-
-for sp in sp_plot:
-    sp_idx = kecoli_process.all_species.index(sp)
-    sp_traj_vk = [data_vk['species_store'][tp][sp_idx][1] for tp in range(len(data_vk['species_store']))]
-
-    plt.plot(tp_vk, np.array(sp_traj_vk)/max(sp_traj_vk), label=sp)
-
-plt.legend(bbox_to_anchor=(0.95, 1))
-plt.xlabel('Time (s)')
-plt.show()
 
 
 #%%
@@ -192,3 +163,39 @@ results_vk_nopx = perturb_vkecoli_millard(config_nopx)
 results_vk = [results_vk_default, results_vk_noglc, results_vk_nopx]
 
 #%%
+
+
+sp_plot = ["GLX","FUM","PYR","ACCOA","AKG","SUCCOA","OAA"]
+results = [result_default, result_noglc, result_nopx]
+titles = ["Default","No glucose","No phosphate"]
+fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(15, 6),layout='tight')
+
+
+
+
+for i,result in enumerate(results):
+    result_vk = results_vk[i]
+    tp_vk = result_vk['time']
+    for sp in sp_plot:
+        sp_traj = result.loc[:,sp].values
+
+        sp_idx = kecoli_process.all_species.index(sp)
+
+        sp_traj_vk = [result_vk['species_store'][tp][sp_idx][1] for tp in range(len(result_vk['species_store']))]
+
+
+        # y_vals = sp_traj/max(sp_traj)
+        y_vals = sp_traj
+        y_vals_vk = sp_traj_vk
+
+        axs[i].plot(result.index, y_vals, label=sp)
+        axs[i].plot(tp_vk, y_vals_vk, ls='None', marker='x',markevery=20)
+
+
+
+        axs[i].set_xlabel('Time (s)')
+        axs[i].set_title(titles[i])
+
+axs[i].legend(bbox_to_anchor=(1.0, 1))
+
+plt.savefig(os.path.join(output_validation,'validation_results.png'))
