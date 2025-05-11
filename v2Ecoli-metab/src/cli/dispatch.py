@@ -11,12 +11,14 @@ from . import validate
 # ==============================================================================
 
 def find_model(name: str | None = None) -> Path:
-  default = "k-ecoli74.xml"
+  default = "E_coli_Millard2016.xml"
   if name is None or not name:
     name = default
   if name != default:
     raise NotImplementedError(f"unknown model: {name}")
-  return importlib.resources.files("v2Ecoli.metab.model") / name
+  model = importlib.resources.files("v2Ecoli.metab.model") / name
+  assert model.exists()
+  return model
 
 
 # dispatch
@@ -50,7 +52,7 @@ def make_parser() -> ArgumentParser:
     p_cmd.set_defaults(func=dispatch)
     p_cmd.add_argument(
       "model", type=str, nargs="?", default="",
-      metavar="MODEL", help="SBML model (default: k-ecoli74.xml)")
+      metavar="MODEL", help="SBML model (default: E_coli_Millard2016.xml)")
     p_cmd.add_argument(
       "-t", "--time", type=float, default=300.0,
       metavar="T", help="total simulation time (default: 300)")

@@ -2,13 +2,15 @@
 from argparse import Namespace
 import os
 from pathlib import Path
-from typing import Dict, List, Tuple, NamedTuple
+from collections import OrderedDict
+from dataclasses import dataclass, field
+from typing import Dict, List, Tuple, Iterable
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from basico import *
+import basico as bc
 from vivarium.core.engine import Engine
 
 from v2Ecoli.metab.process.kecoli_cell import KecoliCell
@@ -17,13 +19,12 @@ from v2Ecoli.metab.util.plotting import plot_pathway, plot_aa
 
 # ==============================================================================
 
-def setup_dirs(model_name: str):
+def setup_dirs(model_name: str) -> Path:
   output_dir = Path.cwd() / "output" / model_name
-  os.makedirs(output_dir, exist_ok=True)
-  # output_results = os.path.join(output_dir,'results')
-  # output_plots = os.path.join(output_dir,'plots')
-  # output_mapping = os.path.join(output_dir,'mapping')
-  output_validation = os.path.join(output_dir,'validation')
+  # output_results = output_dir / 'results'
+  # output_plots = output_dir / 'plots'
+  # output_mapping = output_dir / 'mapping'
+  output_validation = output_dir / 'validation'
   # os.makedirs(output_results, exist_ok=True)
   # os.makedirs(output_plots, exist_ok=True)
   # os.makedirs(output_mapping, exist_ok=True)
@@ -33,114 +34,135 @@ def setup_dirs(model_name: str):
 
 # ==============================================================================
 
-def perturb_copasi(
-  model, sp_name: str, factors: List[float], time: float
-):
-  sp_all = basico.get_species(model=model).index.to_list()
-  IC_all = basico.get_species(model=model)["initial_concentration"].values
-  sp_idx = sp_all.index(sp_name)
-  sp_ic_default = IC_all[sp_idx]
-  res = {}
-  for f in factors:
-    ic_f = f * sp_ic_default
-    basico.set_species(model=model, name=sp_name, initial_concentration=ic_f)
-    res[f] = {
-      'sp_perturb': sp_name,
-      'sp_val': ic_f,
-      'result': basico.run_time_course(model=model, duration=time)}
-  return res
+@dataclass
+class Perturbation:
+  ic_factors: Dict[str, float] = field(default_factory=dict)
+  param_factors: Dict[str, float] = field(default_factory=dict)
 
-
-def perturb_vivarium(
-  model: KecoliCell, env_sp: str, factors: List[float], time: float
-):
-  ic_sp_default = model.ic_default[model.all_species.index(env_sp)]
-  res = {}
-  for f in factors:
-    config_env = {
-      'model_file': model.parameters['model_file'],
-      'env_perturb': [env_sp],
-      'env_conc': [f * ic_sp_default],
-    }
-    env_process = KecoliCell(parameters=config_env)
-    env_ports = env_process.ports_schema()
-    env_initial_state = env_process.initial_state()
-    env_initial_state['species_store'] = env_initial_state.pop('species')
-    env_sim = Engine(
-      processes={'kecoli': env_process},
-      topology={'kecoli': {'species': ('species_store',)}},
-      initial_state=env_initial_state)
-    env_sim.update(time)
-    res[f] = env_sim.emitter.get_timeseries()
-  return res
+  def __post_init__(self):
+    for (sp, f) in self.ic_factors.items():
+      assert isinstance(sp, str)
+      assert isinstance(f, float)
+    for (par, f) in self.param_factors.items():
+      assert isinstance(par, str)
+      assert isinstance(f, float)
 
 
 # ==============================================================================
 
-class IC_Variation(NamedTuple):
-  Gluc_e: Dict
-  SO4_e: Dict
-  NH3_e: Dict
-  O2_e: Dict
+def perturb_copasi_single(
+  model: bc.COPASI.CDataModel,
+  perturbation: Perturbation, time: float
+) -> pd.DataFrame:
+  # obtain default model config
+  ic_def = bc.get_species(model=model).initial_concentration
+  par_def = bc.get_parameters(model=model).value
+  # perturb model config
+  assert isinstance(perturbation, Perturbation)
+  for (sp, f) in perturbation.ic_factors.items():
+    bc.set_species(model=model, name=sp, initial_concentration=f * ic_def[sp])
+  for (par, f) in perturbation.param_factors.items():
+    bc.set_parameters(model=model, name=par, initial_value=f * par_def[par])
+  # simulate
+  res = bc.run_time_course(model=model, duration=time)
+  assert isinstance(res, pd.DataFrame)
+  # reset model config
+  for sp in perturbation.ic_factors.keys():
+    bc.set_species(model=model, name=sp, initial_concentration=ic_def[sp])
+  for par in perturbation.param_factors.keys():
+    bc.set_parameters(model=model, name=par, initial_value=par_def[par])
+  return res
 
 
-def simulate_copasi(
-  model_path: Path, factors: List[float], time: float
-) -> IC_Variation:
-  model = load_model(model_path)
-  return IC_Variation(*[perturb_copasi(model, sp, factors, time)
-                        for sp in IC_Variation._fields])
-
-
-def simulate_vivarium(
-  model_path: Path, factors: List[float], time: float
-) -> Tuple[KecoliCell, IC_Variation]:
-  config_default = {
+def perturb_vivarium_single(
+  model_path: Path, model: bc.COPASI.CDataModel,
+  perturbation: Perturbation, time: float
+) -> Tuple[KecoliCell, Dict]:
+  # obtain default model config
+  ic_def = bc.get_species(model=model).initial_concentration
+  par_def = bc.get_parameters(model=model).value
+  # perturb model config
+  assert isinstance(perturbation, Perturbation)
+  conf = {
     'model_file': model_path,
-    'env_perturb': ["Gluc_e"],
-    'env_conc': [1.0],
-  }
-  model = KecoliCell(parameters=config_default)
-  return model, IC_Variation(*[perturb_vivarium(model, sp, factors, time)
-                               for sp in IC_Variation._fields])
+    'env_perturb': {sp: f * ic_def[sp]
+                    for (sp, f) in perturbation.ic_factors.items()},
+    'params_perturb': {par: f * par_def[par]
+                       for (par, f) in perturbation.param_factors.items()}}
+  # simulate
+  proc = KecoliCell(parameters=conf)
+  ports = proc.ports_schema()
+  ic = proc.initial_state()
+  ic['species_store'] = ic.pop('species')
+  sim = Engine(
+    processes={'kecoli': proc},
+    topology={'kecoli': {'species': ('species_store',)}},
+    initial_state=ic)
+  sim.update(time)
+  return (proc, sim.emitter.get_timeseries())
+
+
+def perturb_copasi(
+  model_path: Path, perturbations: Iterable[Perturbation], time: float
+) -> List[pd.DataFrame]:
+  model = bc.load_model(model_path)
+  return [perturb_copasi_single(model, p, time)
+          for p in perturbations]
+
+
+def perturb_vivarium(
+  model_path: Path, perturbations: Iterable[Perturbation], time: float
+) -> List[Tuple[KecoliCell, Dict]]:
+  model = bc.load_model(model_path)
+  return [perturb_vivarium_single(model_path, model, p, time)
+          for p in perturbations]
 
 
 # ==============================================================================
 
 def plot_pathway_validate(
-  model: KecoliCell, factors: List[float], sp_plot, labels,
-  results_copasi, results_vivarium,
+  perturbation_labels: List[str], sp_plot: List[str],
+  results_copasi: List[pd.DataFrame],
+  results_vivarium: List[Tuple[KecoliCell, Dict]],
   output_validation: Path
 ):
+  ncols = len(perturbation_labels)
+  assert ncols > 1
   plt.rcParams['figure.dpi'] = 90
-  fig, axs = plt.subplots(nrows=1, ncols=len(factors), figsize=(12, 4))
-  for (ax_idx, f) in enumerate(factors):
-    r_copasi = results_copasi[f]['result']
-    r_vivarium = results_vivarium[f]
+  fig, axs = plt.subplots(nrows=1, ncols=ncols, figsize=(12, 4))
+  perturbations = zip(perturbation_labels, results_copasi, results_vivarium)
+  for (ax_idx, (lbl, r_copasi, (proc, r_vivarium))) in enumerate(perturbations):
     t_vivarium = r_vivarium['time']
-    for (sp, lbl) in zip(sp_plot, labels):
-      sp_idx = model.all_species.index(sp)
+    for sp in sp_plot:
+      sp_idx = proc.all_species.index(sp)
       sp_vivarium = [r_vivarium['species_store'][t][sp_idx][1]
                      for t in range(len(r_vivarium['species_store']))]
       axs[ax_idx].plot(r_copasi.index, r_copasi.loc[:, sp].values, label=sp)
       axs[ax_idx].plot(t_vivarium, sp_vivarium,
                        ls='None', marker='x', markevery=10)
     axs[ax_idx].set_xlabel('Time (s)')
-    axs[ax_idx].set_title(f"{lbl} ({f}x)")
+    axs[ax_idx].set_title(lbl)
   axs[ax_idx].legend(loc='best')
-  sp_perturb = results_copasi[
-    list(results_copasi.keys())[ax_idx]]['sp_perturb'].replace('_e','')
-  plt.savefig(os.path.join(output_validation, str(sp_perturb)+'_perturb.png'))
+  plt.savefig(output_validation / "perturb.png")
 
 
 # ==============================================================================
 
-def main(model: Path, args: Namespace):
-  output_validation = setup_dirs(model.name)
-  factors = [1.0, args.factor, 1/args.factor]
-  res_copasi = simulate_copasi(model, factors, args.time)
-  model, res_vivarium = simulate_vivarium(model, factors, args.time)
+def main(model_path: Path, args: Namespace):
+  perturbations = OrderedDict([
+    ("Default",
+     Perturbation()),
+    ("No glucose",
+     Perturbation({"GLCx": .0}, {"FEED": .0})),
+    ("No phosphate",
+     Perturbation({"Px": .0})),
+    ("No glucose & no phosphate",
+     Perturbation({"GLCx": .0, "Px": .0}, {"FEED": .0}))
+  ])
+  res_copasi = perturb_copasi(model_path, perturbations.values(), args.time)
+  res_vivarium = perturb_vivarium(model_path, perturbations.values(), args.time)
   plot_pathway_validate(
-    model, factors, ["Gluc_e"], ['Glucose'],
-    res_copasi.Gluc_e, res_vivarium.Gluc_e,
-    output_validation)
+    perturbations.keys(),
+    ["GLX", "FUM", "PYR", "ACCOA", "AKG", "SUCCOA", "OAA"],
+    res_copasi, res_vivarium,
+    setup_dirs(model_path.name))
