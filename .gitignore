@@ -65,7 +65,7 @@ trace-*
 # v2Ecoli-metab #
 #################
 *.egg-info
-v2Ecoli-metab/examples/k-ecoli74.zip
+v2Ecoli-metab/examples/*.zip
 credentials/biocyc_credentials.json
 output/
 test_input/
